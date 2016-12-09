@@ -1,8 +1,12 @@
 package Modules;
 
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PointOfInterest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +34,7 @@ public class DirectionFinder {
     private String origin;
     private String destination;
 
+
     public DirectionFinder(DirectionFinderListener listener, String origin, String destination) {
         this.listener = listener;
         this.origin = origin;
@@ -44,8 +49,7 @@ public class DirectionFinder {
     private String createUrl() throws UnsupportedEncodingException {
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
         String urlDestination = URLEncoder.encode(destination, "utf-8");
-
-        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&mode=transit&key=" + GOOGLE_API_KEY;
+        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&mode=transit&transit_mode=subway&transit_routing_preference=less_walking&key=" + GOOGLE_API_KEY;
     }
 
     private class DownloadRawData extends AsyncTask<String, Void, String> {
@@ -103,6 +107,7 @@ public class DirectionFinder {
             JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
             JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
 
+
             route.distance = new Distance(jsonDistance.getString("text"), jsonDistance.getInt("value"));
             route.duration = new Duration(jsonDuration.getString("text"), jsonDuration.getInt("value"));
             route.endAddress = jsonLeg.getString("end_address");
@@ -110,6 +115,7 @@ public class DirectionFinder {
             route.startLocation = new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng"));
             route.endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
             route.points = decodePolyLine(overview_polylineJson.getString("points"));
+
 
             routes.add(route);
         }
