@@ -29,5 +29,9 @@ dependencies {
     compile 'com.google.android.gms:play-services:9.8.0'
     compile 'com.android.support:support-v4:25.0.1'
     compile 'com.android.support:support-vector-drawable:25.0.1'
+    compile 'com.dbconnection.subham.dblibrary:dblibrary:1.0'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+
+
     testCompile 'junit:junit:4.12'
 }
