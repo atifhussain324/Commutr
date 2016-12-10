@@ -3,6 +3,7 @@ package com.example.atif.maps_;
 import android.*;
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
@@ -46,7 +47,7 @@ import Modules.Route;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener{
 
-
+    public Button btnAlerts;
     private GoogleMap mMap;
     private static final int MY_PERMISSION_FINE_LOCATION = 101;
     private GoogleApiClient mGoogleApiClient;
@@ -59,6 +60,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Polyline> polylinePaths = new ArrayList<>();
     private PlaceAutocompleteFragment mOriginAutocompleteFragment, mDestinationAutocompleteFragment;
 
+
+    public void Alerts(){
+        btnAlerts = (Button)findViewById(R.id.btnAlert);
+        btnAlerts.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent alerts = new Intent(MapsActivity.this, AlertActivity.class);
+                startActivity(alerts);
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +118,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onError(Status status) {
             }
         });
+
+        Alerts();
 
     }
 
