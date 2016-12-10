@@ -16,10 +16,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
@@ -53,7 +56,7 @@ import Modules.RouteLister;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener {
 
-    public Button btnAlerts;
+    public ImageButton btnAlerts;
     private GoogleMap mMap;
     private static final int MY_PERMISSION_FINE_LOCATION = 101;
     private GoogleApiClient mGoogleApiClient;
@@ -69,7 +72,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     public void Alerts(){
-        btnAlerts = (Button)findViewById(R.id.btnAlert);
+        btnAlerts = (ImageButton) findViewById(R.id.btnAlerts);
         btnAlerts.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
