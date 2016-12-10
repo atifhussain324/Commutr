@@ -5,13 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.atif.maps_.MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <fragment
         android:id="@+id/place_autocomplete_origin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+
         />
     <fragment
         android:id="@+id/place_autocomplete_destination"
@@ -24,6 +26,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+
+
         >
         <ImageView
             android:layout_marginLeft="20dp"
@@ -77,58 +81,58 @@
             tools:context="com.example.atif.maps_.MapsActivity"
             tools:layout="@layout/activity_maps" />
         <LinearLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true">
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.2">
-                <Button
+                android:layout_weight="0.2"
+                android:background="">
+                <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Planner"/>
+                    android:src="@drawable/map"
+                    />
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.2">
-                <Button
+                <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Schedules"/>
+                    android:src="@drawable/schedule"/>
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.2">
-                <Button
+                <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Map"/>
+                    android:src="@drawable/planner"/>
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.2">
-                <Button
+                <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Alerts"
-                    android:id="@+id/btnAlert"/>
+                    android:src="@drawable/alerts"/>
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.2">
-                <Button
+                <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Settings"/>
+                    android:src="@drawable/settings"/>
             </RelativeLayout>
         </LinearLayout>
-
-
 
     </RelativeLayout>
 
