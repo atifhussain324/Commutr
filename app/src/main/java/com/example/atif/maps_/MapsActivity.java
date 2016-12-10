@@ -49,6 +49,7 @@ import java.util.List;
 import Modules.DirectionFinder;
 import Modules.DirectionFinderListener;
 import Modules.Route;
+import Modules.RouteLister;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener {
 
@@ -85,11 +86,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-
-        //contactList = new ArrayList<>();
-
-        //lv = (ListView) findViewById(R.id.list);
 
 
 
@@ -157,6 +153,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         try {
             new DirectionFinder(this, mOrigin, mDestination).execute();
+            //new RouteLister(this, mOrigin, mDestination).execute();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
