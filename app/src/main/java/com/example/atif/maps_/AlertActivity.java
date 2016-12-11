@@ -41,6 +41,8 @@ public class AlertActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alert);
+        //getSupportActionBar().hide();
+
         final Intent intent= new Intent(this, myIntentService.class);
         //startService(intent);
         //new DataFeedTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
