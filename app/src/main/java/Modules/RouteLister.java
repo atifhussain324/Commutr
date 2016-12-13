@@ -1,9 +1,13 @@
 package Modules;
 
+import android.app.IntentService;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.atif.maps_.AlertActivity;
+import com.example.atif.maps_.MapsActivity;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -28,19 +32,16 @@ import java.util.List;
 public class RouteLister {
     private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
     private static final String GOOGLE_API_KEY = "AIzaSyDmISqtltaK4I-e22Oh8W2wb-j0p1u9jSA";
-    private DirectionFinderListener listener;
     private String origin;
     private String destination;
-
+    public static ArrayList<Route> routes;
 
     public RouteLister(DirectionFinderListener listener, String origin, String destination) {
-        this.listener = listener;
         this.origin = origin;
         this.destination = destination;
     }
 
     public void execute() throws UnsupportedEncodingException {
-        listener.onDirectionFinderStart();
         new DownloadRawData().execute(createUrl());
     }
 
@@ -90,7 +91,7 @@ public class RouteLister {
         if (data == null)
             return;
 
-        List<Route> routes = new ArrayList<Route>();
+        routes = new ArrayList<>();
         JSONObject jsonData = new JSONObject(data);
         JSONArray jsonRoutes = jsonData.getJSONArray("routes");
         Log.i("testing","before for loop");
@@ -101,13 +102,8 @@ public class RouteLister {
                 JSONObject jsonRoute = jsonRoutes.getJSONObject(i);
                 Route route = new Route();
 
-                JSONObject overview_polylineJson = jsonRoute.getJSONObject("overview_polyline");
                 JSONArray jsonLegs = jsonRoute.getJSONArray("legs");
                 JSONObject jsonLeg = jsonLegs.getJSONObject(0);
-                JSONObject jsonDistance = jsonLeg.getJSONObject("distance");
-                JSONObject jsonDuration = jsonLeg.getJSONObject("duration");
-                JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
-                JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
                 if (jsonLegs.getJSONObject(0) != null) {
                     String location = jsonLegs.getJSONObject(0).getString("end_address");
                     Log.i("testing", location);
@@ -115,15 +111,26 @@ public class RouteLister {
                     Log.i("testing", "No data found");
                 }
 
+                String totalDuration = jsonLeg.getJSONObject("duration").getString("text");
+                Log.i("testing", totalDuration);
+
+                String departureTime = jsonLeg.getJSONObject("departure_time").getString("text");
+                Log.i("testing", departureTime);
+
+                String arrivalTime = jsonLeg.getJSONObject("arrival_time").getString("text");
+
+                Log.i("testing", arrivalTime);
+
+
+                route.setArrivalTime(arrivalTime);
+                route.setDepartureTime(departureTime);
+                route.setTotalDuration(totalDuration);
+
+
+
+
                 //System.out.println(location);
 
-                route.distance = new Distance(jsonDistance.getString("text"), jsonDistance.getInt("value"));
-                route.duration = new Duration(jsonDuration.getString("text"), jsonDuration.getInt("value"));
-                route.endAddress = jsonLeg.getString("end_address");
-                route.startAddress = jsonLeg.getString("start_address");
-                route.startLocation = new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng"));
-                route.endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
-                route.points = decodePolyLine(overview_polylineJson.getString("points"));
 
 
                 routes.add(route);
@@ -133,45 +140,14 @@ public class RouteLister {
 
         }
 
+
         //listener.onDirectionFinderSuccess(routes);
         Log.i("test","outside");
         }
-    private List<LatLng> decodePolyLine(final String poly) {
-        int len = poly.length();
-        int index = 0;
-        List<LatLng> decoded = new ArrayList<LatLng>();
-        int lat = 0;
-        int lng = 0;
-
-        while (index < len) {
-            int b;
-            int shift = 0;
-            int result = 0;
-            do {
-                b = poly.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
-
-            shift = 0;
-            result = 0;
-            do {
-                b = poly.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
-
-            decoded.add(new LatLng(
-                    lat / 100000d, lng / 100000d
-            ));
-        }
-
-        return decoded;
+    public ArrayList<Route> getlist(){
+        return routes;
     }
+
 
 }
 

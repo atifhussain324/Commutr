@@ -18,6 +18,8 @@ import android.widget.TextView;
         TextView description;
         ImageView imageView;
 
+
+
         View_Holder(View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.cardView);

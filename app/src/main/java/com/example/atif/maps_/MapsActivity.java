@@ -3,6 +3,8 @@ package com.example.atif.maps_;
 import android.*;
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -13,6 +15,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -73,6 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Polyline> polylinePaths = new ArrayList<>();
     private PlaceAutocompleteFragment mOriginAutocompleteFragment, mDestinationAutocompleteFragment;
     private ListView lv;
+    ArrayList<Route> temp;
 
 
     //Button
@@ -130,13 +135,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        temp=RouteLister.routes;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-
+        mOrigin = "";
+        mDestination = "";
 
         //Search Button
         searchButton = (Button) findViewById(R.id.searchButton);
@@ -144,7 +150,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 sendRequest();
-            }
+                Log.i("testing2",String.valueOf(temp.size()));
+
+                 }
         });
 
 
@@ -193,23 +201,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void sendRequest() {
         if (mOrigin.isEmpty()) {
             Toast.makeText(this, "Please enter origin address!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (mDestination.isEmpty()) {
-            Toast.makeText(this, "Please enter destination address!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (mOrigin.isEmpty() && mDestination.isEmpty()) {
-            Toast.makeText(this, "Please enter a starting and destination address", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
-        try {
-            new DirectionFinder(this, mOrigin, mDestination).execute();
-            //new RouteLister(this, mOrigin, mDestination).execute();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         }
+        else if (mDestination.isEmpty()) {
+            Toast.makeText(this, "Please enter destination address!", Toast.LENGTH_SHORT).show();
+
+        }
+        else if (mOrigin.isEmpty() && mDestination.isEmpty()) {
+            Toast.makeText(this, "Please enter a starting and destination address", Toast.LENGTH_SHORT).show();
+
+        }
+        else {
+            try {
+                new DirectionFinder(this, mOrigin, mDestination).execute();
+                new RouteLister(this, mOrigin, mDestination).execute();
+            } catch (Exception e) {
+                Log.e("Find route", e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        //Toast.makeText(this,RouteLister.routes.get(0).getArrivalTime(),Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -322,6 +333,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             polylinePaths.add(mMap.addPolyline(polylineOptions));
 
         }
+    }
+    public class ResponseReceiver extends BroadcastReceiver {
+        public static final String ACTION_RESP =
+                "com.rahman.myapplication.action";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context,"Alerts Updated",Toast.LENGTH_LONG).show();
+            ArrayList<Alert> list =(ArrayList<Alert>) intent.getSerializableExtra(myIntentService.PARAM_OUT_MSG);
+             /*RecyclerView recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+            Recycler_View_Adapter adapter = new Recycler_View_Adapter(list, getApplication());
+            recyclerView.setAdapter(adapter);
+            */
+
+            RecyclerView recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+            Recycler_View_Adapter adapter = new Recycler_View_Adapter(list, getApplication());
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+            if(list.size()==0) {
+                TextView noAlerts = (TextView) findViewById(R.id.txtNoAlerts);
+                noAlerts.setText("No Alerts At This Moment");
+            }
+            //result.setText(text);
+        }
+
     }
 
     @Override
