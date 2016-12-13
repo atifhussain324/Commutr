@@ -17,6 +17,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +38,64 @@ import java.util.TimerTask;
 
 public class AlertActivity extends AppCompatActivity {
     private ResponseReceiver receiver;
+    ImageButton btnAlerts;
+    ImageButton btnMaps;
+    ImageButton btnSchedule;
+    ImageButton btnoffMap;
+    ImageButton btnSetting;
+
+    //Button
+    public void Schedule() {
+        btnSchedule = (ImageButton) findViewById(R.id.schedule);
+        btnSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent time = new Intent(AlertActivity.this, trainSchedule.class);
+                startActivity(time);
+            }
+        });
+    }
+
+    public void Alerts(){
+        btnAlerts = (ImageButton) findViewById(R.id.btnAlerts);
+        btnAlerts.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent alerts = new Intent(AlertActivity.this, AlertActivity.class);
+                startActivity(alerts);
+            }
+        });
+    }
+    public void Maps(){
+        btnMaps = (ImageButton) findViewById(R.id.planner);
+        btnMaps.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent alerts = new Intent(AlertActivity.this, MapsActivity.class);
+                startActivity(alerts);
+            }
+        });
+    }
+    public void offMap(){
+        btnoffMap = (ImageButton) findViewById(R.id.offlinemap);
+        btnoffMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent offMaps = new Intent(AlertActivity.this, offMap.class);
+                startActivity(offMaps);
+            }
+        });
+    }
+    public void Settings(){
+        btnSetting = (ImageButton) findViewById(R.id.setting);
+        btnSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent setting = new Intent(AlertActivity.this, offMap.class);
+                startActivity(setting);
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +121,11 @@ public class AlertActivity extends AppCompatActivity {
             }
         }, 0, period);
 
+        Alerts();
+        Maps();
+        offMap();
+        Schedule();
+        Settings();
 
     }
 

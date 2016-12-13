@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_dbuse"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.atif.maps_.DBuse">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+
+        <Button
+            android:text="Back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/back" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="match_parent"
+        android:layout_height="444dp"></ListView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/menubar"
+        android:layout_alignParentBottom="true"
+        android:background="#75B095">
+
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/schedule"
+            android:layout_weight="1"
+            android:src="@drawable/schedule"
+            android:scaleType="centerCrop"
+            android:background="@null"
+            android:padding="20dp"
+            />
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/offlinemap"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/map"
+            android:scaleType="centerCrop"
+            android:padding="20dp"
+            />
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/planner"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/planner"
+            android:scaleType="centerCrop"
+            android:padding="20dp"
+            />
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/btnAlerts"
+            android:layout_weight="1"
+            android:src="@drawable/alerts"
+            android:scaleType="centerCrop"
+            android:background="@null"
+            android:padding="20dp"
+            />
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/setting"
+            android:layout_weight="1"
+            android:src="@drawable/settings"
+            android:scaleType="centerCrop"
+            android:background="@null"
+            android:padding="20dp"
+            />
+    </LinearLayout>
+
+
+</LinearLayout>

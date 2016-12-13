@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.atif.maps_">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -11,7 +12,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/mainicon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -37,7 +38,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <service android:name=".myIntentService" />
+
         <activity android:name=".AlertActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,19 +49,30 @@
             </intent-filter>
         </activity>
 
-        <!--<activity
+        <!--
+            <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />  -->
-        <activity
-            android:name=".MainActivity">
-             <intent-filter>
+            android:label="@string/title_activity_settings" />
+        -->
+        <activity android:name=".MainActivity">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".trainSchedule">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".DBuse" />
+        <activity android:name=".offMap" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>

@@ -56,7 +56,11 @@ import Modules.RouteLister;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener {
 
-    public ImageButton btnAlerts;
+    ImageButton btnAlerts;
+    ImageButton btnMaps;
+    ImageButton btnSchedule;
+    ImageButton btnoffMap;
+    ImageButton btnSetting;
     private GoogleMap mMap;
     private static final int MY_PERMISSION_FINE_LOCATION = 101;
     private GoogleApiClient mGoogleApiClient;
@@ -71,6 +75,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ListView lv;
 
 
+    //Button
+    public void Schedule() {
+        btnSchedule = (ImageButton) findViewById(R.id.schedule);
+        btnSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent time = new Intent(MapsActivity.this, trainSchedule.class);
+                startActivity(time);
+            }
+        });
+    }
+
     public void Alerts(){
         btnAlerts = (ImageButton) findViewById(R.id.btnAlerts);
         btnAlerts.setOnClickListener(new View.OnClickListener(){
@@ -78,6 +94,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v){
                 Intent alerts = new Intent(MapsActivity.this, AlertActivity.class);
                 startActivity(alerts);
+            }
+        });
+    }
+    public void Maps(){
+        btnMaps = (ImageButton) findViewById(R.id.planner);
+        btnMaps.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent alerts = new Intent(MapsActivity.this, MapsActivity.class);
+                startActivity(alerts);
+            }
+        });
+    }
+    public void offMap(){
+        btnoffMap = (ImageButton) findViewById(R.id.offlinemap);
+        btnoffMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent offMaps = new Intent(MapsActivity.this, offMap.class);
+                startActivity(offMaps);
+            }
+        });
+    }
+    public void Settings(){
+        btnSetting = (ImageButton) findViewById(R.id.setting);
+        btnSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent setting = new Intent(MapsActivity.this, SettingsActivity.class);
+                startActivity(setting);
             }
         });
     }
@@ -136,6 +182,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         Alerts();
+        Maps();
+        offMap();
+        Schedule();
+        Settings();
 
     }
 
