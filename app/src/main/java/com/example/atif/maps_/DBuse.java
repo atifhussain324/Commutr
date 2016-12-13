@@ -106,13 +106,15 @@ public class DBuse extends AppCompatActivity {
 
 
 
-                Alerts();
-                Maps();
-                offMap();
-                Schedule();
-                Settings();
+
             }
         });
+
+        Alerts();
+        Maps();
+        offMap();
+        Schedule();
+        Settings();
     }
 
     private class getTrainInfo extends AsyncTask<Void, Void, Void> {
