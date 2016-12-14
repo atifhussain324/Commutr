@@ -13,7 +13,9 @@
 
 
         <Button
+            android:layout_marginTop="10dp"
             android:text="Back"
+            android:background="#77AF96"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/back" />
@@ -22,7 +24,9 @@
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
-        android:layout_height="444dp"></ListView>
+        android:textSize="60dp"
+        android:textStyle="bold"
+        android:layout_height="450dp"></ListView>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"

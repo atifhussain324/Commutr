@@ -1,5 +1,4 @@
 package com.example.atif.maps_;
-
 import android.*;
 import android.Manifest;
 import android.app.ProgressDialog;

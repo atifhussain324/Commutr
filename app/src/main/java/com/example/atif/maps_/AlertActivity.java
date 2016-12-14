@@ -35,6 +35,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -57,7 +58,6 @@ public class AlertActivity extends AppCompatActivity {
             }
         });
     }
-
     public void Alerts(){
         btnAlerts = (ImageButton) findViewById(R.id.btnAlerts);
         btnAlerts.setOnClickListener(new View.OnClickListener(){
@@ -93,7 +93,7 @@ public class AlertActivity extends AppCompatActivity {
         btnSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent setting = new Intent(AlertActivity.this, offMap.class);
+                Intent setting = new Intent(AlertActivity.this, SettingsActivity.class);
                 startActivity(setting);
             }
         });

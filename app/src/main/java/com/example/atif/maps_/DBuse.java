@@ -181,9 +181,14 @@ public class DBuse extends AppCompatActivity {
     public ArrayList<String> trainInfo(){
         final ArrayList<String> annoucements = new ArrayList<>();
 
-
-        String stationName ="59 st - Columbus Circle";
-        String query = "select route_id, trip_headsign, round(time_to_sec(subtime(time_format(now(),'%H:%i:%S'), arrival_time))/60) as estTime from stops, stop_times, trips where stops.stop_id = stop_times.stop_id and stop_times.trip_id = trips.trip_id and stops.stop_name LIKE '%"+message+"%' and stop_times.arrival_time < time_format(now(),'%H:%i:%S') order by estTime asc limit 15;";
+        String query = "select route_id, trip_headsign, round(time_to_sec(subtime(time_format(now(),'%H:%i:%S'), " +
+                "arrival_time))/60) as estTime " +
+                "from stops, stop_times, trips " +
+                "where stops.stop_id = stop_times.stop_id " +
+                "and stop_times.trip_id = trips.trip_id " +
+                "and stops.stop_name LIKE '%"+message+"%' " +
+                "and stop_times.arrival_time < time_format(now(),'%H:%i:%S') " +
+                "order by estTime asc limit 15;";
 
         try{
             Statement st = conn.createStatement();

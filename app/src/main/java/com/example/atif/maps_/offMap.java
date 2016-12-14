@@ -20,19 +20,15 @@ public class offMap extends AppCompatActivity implements OnTouchListener {
     ImageButton btnoffMap;
     ImageButton btnSetting;
     private static final String TAG = "Touch";
-    @SuppressWarnings("unused")
     private static final float MIN_ZOOM = 1f,MAX_ZOOM = 1f;
-
     // These matrices will be used to scale points of the image
     Matrix matrix = new Matrix();
     Matrix savedMatrix = new Matrix();
-
     // The 3 states (events) which the user is trying to perform
     static final int NONE = 0;
     static final int DRAG = 1;
     static final int ZOOM = 2;
     int mode = NONE;
-
     // these PointF objects are used to record the point(s) the user is touching
     PointF start = new PointF();
     PointF mid = new PointF();
@@ -50,7 +46,6 @@ public class offMap extends AppCompatActivity implements OnTouchListener {
             }
         });
     }
-
     public void Alerts(){
         btnAlerts = (ImageButton) findViewById(R.id.btnAlerts);
         btnAlerts.setOnClickListener(new View.OnClickListener(){
@@ -91,7 +86,6 @@ public class offMap extends AppCompatActivity implements OnTouchListener {
             }
         });
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +100,6 @@ public class offMap extends AppCompatActivity implements OnTouchListener {
         Schedule();
         Settings();
     }
-
     @Override
     public boolean onTouch(View v, MotionEvent event)
     {
@@ -196,7 +189,6 @@ public class offMap extends AppCompatActivity implements OnTouchListener {
      * Description: calculates the midpoint between the two fingers
      * ------------------------------------------------------------
      */
-
     private void midPoint(PointF point, MotionEvent event)
     {
         float x = event.getX(0) + event.getX(1);
