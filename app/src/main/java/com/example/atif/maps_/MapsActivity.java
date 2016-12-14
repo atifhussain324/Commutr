@@ -72,6 +72,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleApiClient mGoogleApiClient;
     private String locationName;
     private Button searchButton;
+    private ImageView routeButton;
     private String mOrigin, mDestination;
     private ProgressDialog progressDialog;
     private List<Marker> originMarkers = new ArrayList<>();
@@ -80,8 +81,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private PlaceAutocompleteFragment mOriginAutocompleteFragment, mDestinationAutocompleteFragment;
     private ListView lv;
     //ArrayList<RouteOption> temp;
-    //public RecyclerView recyclerView;
     //public Recycler_View_Adapter adapter;
+    //public static RecyclerView recyclerView;
 
     //Button
     public void Schedule() {
@@ -146,6 +147,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //temp=RouteLister.routeList;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        //recyclerView= (RecyclerView) findViewById(R.id.recycler_view_route);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -162,6 +165,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //Log.i("testing2",String.valueOf(temp.size()));
 
                  }
+        });
+
+        routeButton = (ImageView) findViewById(R.id.routeButton);
+        routeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent routeActivity = new Intent(MapsActivity.this, com.example.atif.maps_.routeActivity.class);
+                startActivity(routeActivity);
+
+                //temp=RouteLister.routeList;
+                //Log.i("testing2",String.valueOf(temp.size()));
+
+            }
         });
 
 
@@ -343,32 +359,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
     }
-    public class ResponseReceiver extends BroadcastReceiver {
-        public static final String ACTION_RESP =
-                "com.rahman.myapplication.action";
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context,"Alerts Updated",Toast.LENGTH_LONG).show();
-            ArrayList<Alert> list =(ArrayList<Alert>) intent.getSerializableExtra(myIntentService.PARAM_OUT_MSG);
-             /*RecyclerView recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-            Recycler_View_Adapter adapter = new Recycler_View_Adapter(list, getApplication());
-            recyclerView.setAdapter(adapter);
-            */
-
-            RecyclerView recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-            Recycler_View_Adapter adapter = new Recycler_View_Adapter(list, getApplication());
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-
-            if(list.size()==0) {
-                TextView noAlerts = (TextView) findViewById(R.id.txtNoAlerts);
-                noAlerts.setText("No Alerts At This Moment");
-            }
-            //result.setText(text);
-        }
-
-    }
 
     @Override
     public void onPoiClick(PointOfInterest poi) {

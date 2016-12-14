@@ -46,7 +46,9 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_distance"
-            android:layout_weight="0.2"/>
+            android:layout_weight="0.2"
+            android:id="@+id/routeButton"
+            />
         <TextView
             android:layout_marginLeft="5dp"
             android:layout_width="wrap_content"
@@ -92,6 +94,9 @@
             android:layout_height="400dp"
             tools:context="com.example.atif.maps_.MapsActivity"
             tools:layout="@layout/activity_maps" />
+
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"

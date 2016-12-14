@@ -16,14 +16,21 @@ public class View_Holder_Planner extends RecyclerView.ViewHolder {
 
     TextView totalDuration;
     TextView timeRange;
+    TextView title1;
+    TextView title2;
+    TextView title3;
 
 
 
     View_Holder_Planner(View itemView) {
             super(itemView);
-            totalDuration = (TextView) itemView.findViewById(R.id.direction_item_total_time);
-            timeRange = (TextView) itemView.findViewById(R.id.direction_item_time);
+            //totalDuration = (TextView) itemView.findViewById(R.id.direction_item_total_time);
+            //timeRange = (TextView) itemView.findViewById(R.id.direction_item_time);
+            title1 = (TextView) itemView.findViewById(R.id.title1);
+        title2 = (TextView) itemView.findViewById(R.id.title2);
+        title3 = (TextView) itemView.findViewById(R.id.title3);
 
-        }
+
+    }
     }
 
