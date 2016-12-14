@@ -158,9 +158,10 @@ public class RouteLister {
           //final LinearLayoutManager layoutManager= new LinearLayoutManager(mActivity.getApplicationContext());
         //layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         //mActivity.recyclerView.setLayoutManager(layoutManager);
-        Intent i= new Intent(mActivity,routeActivity.class);
-        i.putExtra("FILES_TO_SEND",routeList);
-        mActivity.startActivity(i);
+        //Intent i= new Intent(mActivity,routeActivity.class);
+       // Intent i = new Intent();
+        //i.putExtra("FILES_TO_SEND",routeList);
+        //mActivity.startActivity(i);
 
         //Recycler_Route_Adapter adapter = new Recycler_Route_Adapter(routeList,mActivity.getApplication());
         //mActivity.recyclerView.setAdapter(adapter);

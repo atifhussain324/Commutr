@@ -80,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Polyline> polylinePaths = new ArrayList<>();
     private PlaceAutocompleteFragment mOriginAutocompleteFragment, mDestinationAutocompleteFragment;
     private ListView lv;
-    //ArrayList<RouteOption> temp;
+    ArrayList<RouteOption> temp;
     //public Recycler_View_Adapter adapter;
     //public static RecyclerView recyclerView;
 
@@ -171,8 +171,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         routeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent routeActivity = new Intent(MapsActivity.this, com.example.atif.maps_.routeActivity.class);
-                startActivity(routeActivity);
+                //Intent routeActivity = new Intent(MapsActivity.this, com.example.atif.maps_.routeActivity.class);
+                //startActivity(routeActivity);
+                temp = RouteLister.routeList;
+                Intent i = new Intent(MapsActivity.this,routeActivity.class);
+                i.putExtra("FILES_TO_SEND",temp);
+                startActivity(i);
 
                 //temp=RouteLister.routeList;
                 //Log.i("testing2",String.valueOf(temp.size()));
