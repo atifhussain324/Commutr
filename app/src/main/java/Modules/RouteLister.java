@@ -34,6 +34,7 @@ public class RouteLister {
     private String destination;
     public static ArrayList<RouteOption> routeList=  new ArrayList<>();
     private MapsActivity mActivity;
+    RouteOption routeOption;
 
 
     public RouteLister(MapsActivity activity, String origin, String destination) {
@@ -102,7 +103,7 @@ public class RouteLister {
             try {
                 JSONObject jsonRoute = jsonRoutes.getJSONObject(0);
                 //Route route = new Route();
-                RouteOption routeOption= new RouteOption();
+
 
                 JSONArray jsonLegs = jsonRoute.getJSONArray("legs");
                 JSONObject jsonLeg = jsonLegs.getJSONObject(0);
@@ -124,6 +125,7 @@ public class RouteLister {
                 */
                 JSONArray stepsArray=jsonLeg.getJSONArray("steps");
                 for (int i=0;i<stepsArray.length();i++) {
+                    RouteOption routeOption= new RouteOption();
                     Log.i("testingFinal", Integer.toString(stepsArray.length()));
                     if(stepsArray.getJSONObject(i).getString("travel_mode").equals("WALKING")){
                         String wName = stepsArray.getJSONObject(i).getString("travel_mode");
@@ -202,7 +204,7 @@ public class RouteLister {
 
 
         //}
-        Log.i("testing for list",routeList.get(0).getInstruction());
+        //Log.i("testing for list",routeList.get(0).getInstruction());
 
           //final LinearLayoutManager layoutManager= new LinearLayoutManager(mActivity.getApplicationContext());
         //layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
