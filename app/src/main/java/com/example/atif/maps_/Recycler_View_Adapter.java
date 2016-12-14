@@ -41,6 +41,7 @@ public class Recycler_View_Adapter extends RecyclerView.Adapter<View_Holder> {
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.title.setText(list.get(position).getDirection()+"  "+list.get(position).getTrain()+" Train");
         holder.description.setText("Status:   "+list.get(position).getStatus());
+        holder.extraInfo.setText("Allow additional travel time");
         //holder.imageView.setImageResource(list.get(position).imageId);
 
         //animate(holder);

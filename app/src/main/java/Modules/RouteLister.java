@@ -3,6 +3,7 @@ package Modules;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -34,9 +35,11 @@ public class RouteLister {
     private static final String GOOGLE_API_KEY = "AIzaSyDmISqtltaK4I-e22Oh8W2wb-j0p1u9jSA";
     private String origin;
     private String destination;
-    public static ArrayList<Route> routes;
+    public static ArrayList<RouteOption> routeList=  new ArrayList<>();
+    private MapsActivity mActivity;
 
-    public RouteLister(DirectionFinderListener listener, String origin, String destination) {
+    public RouteLister(MapsActivity activity, String origin, String destination) {
+        this.mActivity = activity;
         this.origin = origin;
         this.destination = destination;
     }
@@ -91,7 +94,7 @@ public class RouteLister {
         if (data == null)
             return;
 
-        routes = new ArrayList<>();
+        //routeList = new ArrayList<>();
         JSONObject jsonData = new JSONObject(data);
         JSONArray jsonRoutes = jsonData.getJSONArray("routes");
         Log.i("testing","before for loop");
@@ -100,7 +103,8 @@ public class RouteLister {
             Log.i("testing", "in loop - " + i);
             try {
                 JSONObject jsonRoute = jsonRoutes.getJSONObject(i);
-                Route route = new Route();
+                //Route route = new Route();
+                RouteOption routeOption= new RouteOption();
 
                 JSONArray jsonLegs = jsonRoute.getJSONArray("legs");
                 JSONObject jsonLeg = jsonLegs.getJSONObject(0);
@@ -122,9 +126,9 @@ public class RouteLister {
                 Log.i("testing", arrivalTime);
 
 
-                route.setArrivalTime(arrivalTime);
-                route.setDepartureTime(departureTime);
-                route.setTotalDuration(totalDuration);
+                routeOption.setArrivalTime(arrivalTime);
+                routeOption.setDepartureTime(departureTime);
+                routeOption.setTotalDuration(totalDuration);
 
 
 
@@ -133,10 +137,17 @@ public class RouteLister {
 
 
 
-                routes.add(route);
+                routeList.add(routeOption);
             }catch(Exception e){
                 Log.e("testing", e.getMessage());
             }
+            //adapter = new Recycler_Route_Adapter(list, getApplication());
+            //Recycler_Route_Adapter adapter = new Recycler_Route_Adapter(routeList,mActivity.getApplication());
+            //Log.i("testing for list size",routeList.get(0).getArrivalTime());
+            //recyclerView.setAdapter(adapter);
+            //mActivity.recyclerView.setAdapter(adapter);
+            //recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            //mActivity.recyclerView.setLayoutManager(new LinearLayoutManager(mActivity.getApplicationContext()));
 
         }
 
@@ -144,8 +155,8 @@ public class RouteLister {
         //listener.onDirectionFinderSuccess(routes);
         Log.i("test","outside");
         }
-    public ArrayList<Route> getlist(){
-        return routes;
+    public ArrayList<RouteOption> getlist(){
+        return routeList;
     }
 
 

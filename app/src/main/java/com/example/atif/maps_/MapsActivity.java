@@ -55,8 +55,10 @@ import java.util.List;
 
 import Modules.DirectionFinder;
 import Modules.DirectionFinderListener;
+import Modules.Recycler_Route_Adapter;
 import Modules.Route;
 import Modules.RouteLister;
+import Modules.RouteOption;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener {
 
@@ -77,8 +79,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Polyline> polylinePaths = new ArrayList<>();
     private PlaceAutocompleteFragment mOriginAutocompleteFragment, mDestinationAutocompleteFragment;
     private ListView lv;
-    ArrayList<Route> temp;
-
+    //ArrayList<RouteOption> temp;
+    //public RecyclerView recyclerView;
+    //public Recycler_View_Adapter adapter;
 
     //Button
     public void Schedule() {
@@ -135,7 +138,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        temp=RouteLister.routes;
+        //recyclerView = (RecyclerView) findViewById(R.id.recycler_view_route);
+        //adapter = new Recycler_Route_Adapter(list, getApplication());
+        //recyclerView.setAdapter(adapter);
+        //recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        //temp=RouteLister.routeList;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -150,7 +158,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 sendRequest();
-                Log.i("testing2",String.valueOf(temp.size()));
+                //temp=RouteLister.routeList;
+                //Log.i("testing2",String.valueOf(temp.size()));
 
                  }
         });
@@ -214,7 +223,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         else {
             try {
                 new DirectionFinder(this, mOrigin, mDestination).execute();
-                new RouteLister(this, mOrigin, mDestination).execute();
+                new RouteLister(MapsActivity.this, mOrigin, mDestination).execute();
             } catch (Exception e) {
                 Log.e("Find route", e.getMessage());
                 e.printStackTrace();

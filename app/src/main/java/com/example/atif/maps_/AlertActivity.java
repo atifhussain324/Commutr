@@ -31,7 +31,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -136,23 +138,28 @@ public class AlertActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context,"Alerts Updated",Toast.LENGTH_LONG).show();
+            //Toast.makeText(context,"Alerts Updated",Toast.LENGTH_LONG).show();
             ArrayList<Alert> list =(ArrayList<Alert>) intent.getSerializableExtra(myIntentService.PARAM_OUT_MSG);
-             /*RecyclerView recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-            Recycler_View_Adapter adapter = new Recycler_View_Adapter(list, getApplication());
-            recyclerView.setAdapter(adapter);
-            */
 
             RecyclerView recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
             Recycler_View_Adapter adapter = new Recycler_View_Adapter(list, getApplication());
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
+
+
+            //To show if there are any alerts
             if(list.size()==0) {
                 TextView noAlerts = (TextView) findViewById(R.id.txtNoAlerts);
                 noAlerts.setText("No Alerts At This Moment");
             }
-            //result.setText(text);
+            else{
+                //To show the last updated date and time
+                String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+                TextView lastUpdated = (TextView) findViewById(R.id.txtLastUpdated);
+                lastUpdated.setText("Last Updated  "+currentDateTimeString);
+            }
+
         }
 
     }

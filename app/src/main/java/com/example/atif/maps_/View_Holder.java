@@ -16,9 +16,8 @@ import android.widget.TextView;
         CardView cv;
         TextView title;
         TextView description;
+    TextView extraInfo;
         ImageView imageView;
-
-
 
         View_Holder(View itemView) {
             super(itemView);
@@ -26,6 +25,9 @@ import android.widget.TextView;
             title = (TextView) itemView.findViewById(R.id.title);
             description = (TextView) itemView.findViewById(R.id.description);
             imageView = (ImageView) itemView.findViewById(R.id.imageView);
+            extraInfo = (TextView) itemView.findViewById(R.id.extra);
+
         }
+
     }
 

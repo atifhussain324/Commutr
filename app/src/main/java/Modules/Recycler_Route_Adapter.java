@@ -23,10 +23,10 @@ public class Recycler_Route_Adapter  extends RecyclerView.Adapter<View_Holder_Pl
 
     private int lastPosition = -1;
 
-    List<Alert> list = Collections.emptyList();
+    List<RouteOption> list = Collections.emptyList();
     Context context;
 
-    public Recycler_Route_Adapter(List<Alert> list, Context context) {
+    public Recycler_Route_Adapter(List<RouteOption> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -34,7 +34,7 @@ public class Recycler_Route_Adapter  extends RecyclerView.Adapter<View_Holder_Pl
     @Override
     public View_Holder_Planner onCreateViewHolder(ViewGroup parent, int viewType) {
         //Inflate the layout, initialize the View Holder
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.alert_row_layout, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.route_row_layout, parent, false);
         View_Holder_Planner holder = new View_Holder_Planner(v);
         return holder;
 
@@ -44,8 +44,8 @@ public class Recycler_Route_Adapter  extends RecyclerView.Adapter<View_Holder_Pl
     public void onBindViewHolder(View_Holder_Planner holder, int position) {
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
-        //holder.title.setText(list.get(position).getDirection()+"  "+list.get(position).getTrain()+" Train");
-        //holder.description.setText("Status:   "+list.get(position).getStatus());
+        holder.timeRange.setText(list.get(position).getDepartureTime()+" - "+list.get(position).getArrivalTime());
+        holder.totalDuration.setText(list.get(position).getTotalDuration());
         //holder.imageView.setImageResource(list.get(position).imageId);
 
         //animate(holder);
@@ -70,17 +70,6 @@ public class Recycler_Route_Adapter  extends RecyclerView.Adapter<View_Holder_Pl
 
 
     // Insert a new item to the RecyclerView on a predefined position
-    public void insert(int position, Alert data) {
-        list.add(position, data);
-        notifyItemInserted(position);
-    }
 
-
-    // Remove a RecyclerView item containing a specified Data object
-    public void remove(Alert data) {
-        int position = list.indexOf(data);
-        list.remove(position);
-        notifyItemRemoved(position);
-    }
 }
 
