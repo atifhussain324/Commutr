@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -111,7 +112,7 @@ public class RouteLister {
                 } else {
                     Log.i("testing", "No data found");
                 }
-
+                /*
                 String totalDuration = jsonLeg.getJSONObject("duration").getString("text");
                 Log.i("testing", totalDuration);
 
@@ -120,32 +121,80 @@ public class RouteLister {
 
                 String arrivalTime = jsonLeg.getJSONObject("arrival_time").getString("text");
                 Log.i("testing", arrivalTime);
+                */
+                JSONArray stepsArray=jsonLeg.getJSONArray("steps");
+                for (int i=0;i<stepsArray.length();i++) {
+                    Log.i("testingFinal", Integer.toString(stepsArray.length()));
+                    if(stepsArray.getJSONObject(i).getString("travel_mode").equals("WALKING")){
+                        String wName = stepsArray.getJSONObject(i).getString("travel_mode");
+                        String wInstruction = stepsArray.getJSONObject(i).getString("html_instructions");
+                        String wDuration = stepsArray.getJSONObject(i).getJSONObject("duration").getString("text");
+                        String wDistance = stepsArray.getJSONObject(i).getJSONObject("distance").getString("text");
+                        String travel_mode= stepsArray.getJSONObject(i).getString("travel_mode");
 
+                        routeOption.setTravel_mode(travel_mode);
+                        routeOption.setwName(wName);
+                        routeOption.setwInstruction(wInstruction);
+                        routeOption.setwDistance(wDistance);
+                        routeOption.setwDuration(wDuration);
+
+
+                    }
+                    else{
+                        String tName = stepsArray.getJSONObject(i).getJSONObject("transit_details").getJSONObject("departure_stop").getString("name");
+                        String trainShortName = stepsArray.getJSONObject(i).getJSONObject("transit_details").getJSONObject("line").getString("short_name");
+                        String trainLongName = stepsArray.getJSONObject(i).getJSONObject("transit_details").getJSONObject("line").getString("name");
+                        String tInstruction = stepsArray.getJSONObject(i).getString("html_instructions");
+                        int tStops = stepsArray.getJSONObject(i).getJSONObject("transit_details").getInt("num_stops");
+                        String tStepDur = stepsArray.getJSONObject(i).getJSONObject("duration").getString("text");
+                        String travel_mode= stepsArray.getJSONObject(i).getString("travel_mode");
+
+                        routeOption.setTravel_mode(travel_mode);
+                        routeOption.settName(tName);
+                        routeOption.settInstruction(tInstruction);
+                        routeOption.settShortName(trainShortName);
+                        routeOption.settLongName(trainLongName);
+                        routeOption.settStops(tStops);
+                        routeOption.settStepDuration(tStepDur);
+
+
+
+                    }
+                    routeList.add(routeOption);
+
+                }
+                Log.i("testingFinal2", Integer.toString(routeList.size()));
+                // I want to get the steps Array one sec I will go pee
 
                 //String name2 = jsonLeg.getJSONArray("steps").getJSONObject(0).getJSONObject("transit_details").getJSONObject("departure_stop").getString("name");
 
-                String name = jsonLeg.getJSONArray("steps").getJSONObject(1).getJSONObject("transit_details").getJSONObject("departure_stop").getString("name");
-                String instruction = jsonLeg.getJSONArray("steps").getJSONObject(1).getString("html_instructions");
-                int stops = jsonLeg.getJSONArray("steps").getJSONObject(1).getJSONObject("transit_details").getInt("num_stops");
-                String stepDur = jsonLeg.getJSONArray("steps").getJSONObject(1).getJSONObject("duration").getString("text");
-                Log.i("testing3", name+instruction+stops+stepDur);
+
+                //FOR TRANSIT, STEP 1 is used and Transit Mode = TRANSIT
+
+                // 1 - Name, 2 - trainShortname + trainLongName, 3 - html_instructions, 4- stops and stepdur
+
+                //FOR WALKING, STEP O is used and Transit Mode = WALKING
+
+                //1 - Name , 2 - Instruction , 3 - Duration and Distance
 
 
 
-                routeOption.setArrivalTime(arrivalTime);
-                routeOption.setDepartureTime(departureTime);
-                routeOption.setTotalDuration(totalDuration);
 
+                //Log.i("testing3", name+instruction+stops+stepDur);
+
+
+
+                /*
                 routeOption.setName(name);
                 routeOption.setInstruction(instruction);
                 routeOption.setStops(stops);
                 routeOption.setStepDuration(stepDur);
-
+                */
                 //System.out.println(location);
 
 
 
-                routeList.add(routeOption);
+
             }catch(Exception e){
                 Log.e("testing", e.getMessage());
             }

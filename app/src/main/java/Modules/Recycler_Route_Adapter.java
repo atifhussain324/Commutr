@@ -47,19 +47,32 @@ public class Recycler_Route_Adapter  extends RecyclerView.Adapter<View_Holder_Pl
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         //holder.timeRange.setText(list.get(position).getDepartureTime()+" - "+list.get(position).getArrivalTime());
         //holder.totalDuration.setText(list.get(position).getTotalDuration());
-        holder.title1.setText(list.get(position).getName());
-        holder.title2.setText(list.get(position).getInstruction());
-        holder.title3.setText(list.get(position).getStops()+" "+list.get(position).getStepDuration());
+        if(list.get(position).getTravel_mode().equals("WALKING")){
+            holder.title1.setText(list.get(position).getwName());
+            holder.title2.setText(list.get(position).getwInstruction());
+            holder.title3.setText(list.get(position).getwDistance()+" "+list.get(position).getwDuration());
+        }
+        else{
+            holder.title1.setText(list.get(position).getName());
+            holder.title2.setText(list.get(position).gettShortName()+" "+list.get(position).gettLongName());
+            holder.title3.setText(list.get(position).getInstruction());
+            holder.title4.setText(list.get(position).getStops()+" "+list.get(position).getStepDuration());
+
+        }
+
+
+
         //Log.d("Adapter", list.get(position).getDepartureTime());
         //holder.imageView.setImageResource(list.get(position).imageId);
 
         //animate(holder);
+        /*
         Animation animation = AnimationUtils.loadAnimation(context,
                 (position > lastPosition) ? R.anim.up_from_bottom
                         : R.anim.down_from_top);
         holder.itemView.startAnimation(animation);
         lastPosition = position;
-
+            */
     }
 
     @Override

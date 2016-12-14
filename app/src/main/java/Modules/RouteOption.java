@@ -10,10 +10,22 @@ public class RouteOption implements Serializable{
     private String totalDuration;
     private String departureTime;
     private String arrivalTime;
-    private String name;
-    private String instruction;
-    private int stops;
-    private String stepDuration;
+
+    //Transit Fields
+    private String tName;
+    private String tInstruction;
+    private int tStops;
+    private String tStepDuration;
+    private String tShortName;
+    private String tLongName;
+
+    //Walking Fields
+    private String wName;
+    private String wInstruction;
+    private  String wDuration;
+    private String wDistance;
+
+    private String travel_mode;
 
     public void setTotalDuration(String duration){
         totalDuration = duration;
@@ -24,17 +36,39 @@ public class RouteOption implements Serializable{
     public void setArrivalTime(String arrival_Time){
         arrivalTime = arrival_Time;
     }
-    public void setName(String sName){
-        name= sName;
+    public void settName(String name){
+        tName= name;
     }
-    public void setInstruction(String instruc){
-        instruction= instruc;
+    public void settInstruction(String instruc){
+        tInstruction= instruc;
     }
-    public void setStops(int nStops){
-        stops= nStops;
+    public void settStops(int nStops){
+        tStops= nStops;
     }
-    public void setStepDuration(String stDuration){
-        stepDuration= stDuration;
+    public void settStepDuration(String stDuration){
+        tStepDuration= stDuration;
+    }
+    public void settShortName(String sName){
+        tShortName=sName;
+    }
+    public void settLongName(String lName){
+        tLongName= lName;
+    }
+
+    public void setwName(String name){
+        wName= name;
+    }
+    public void  setwInstruction(String instruction){
+        wInstruction = instruction;
+    }
+    public void setwDuration(String duration){
+        wDuration = duration;
+    }
+    public  void setwDistance(String distance){
+        wDistance= distance;
+    }
+    public void setTravel_mode(String tmode){
+        travel_mode= tmode;
     }
 
 
@@ -50,16 +84,41 @@ public class RouteOption implements Serializable{
         return arrivalTime;
     }
 
+    public String getwName(){
+        return wName;
+    }
+    public String getwInstruction(){
+        return wInstruction;
+    }
+    public String getwDuration(){
+        return wDuration;
+    }
+    public String getwDistance(){
+        return wDistance;
+    }
+
+
     public String getInstruction(){
-        return instruction;
+        return tInstruction;
     }
     public String getName(){
-        return name;
+        return tName;
     }
     public String getStepDuration(){
-        return stepDuration;
+        return tStepDuration;
     }
     public int getStops(){
-        return stops;
+        return tStops;
     }
+    public String gettShortName(){
+        return tShortName;
+    }
+    public String gettLongName(){
+        return tLongName;
+
+    }
+    public String getTravel_mode(){
+        return travel_mode;
+    }
+
 }
