@@ -1,23 +1,35 @@
 package com.example.atif.maps_;
+
 import android.*;
 import android.Manifest;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.KeyEvent;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -25,6 +37,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -47,6 +61,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -59,7 +76,7 @@ import Modules.Route;
 import Modules.RouteLister;
 import Modules.RouteOption;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener, GoogleMap.OnInfoWindowClickListener {
 
     ImageButton btnAlerts;
     ImageButton btnMaps;
@@ -80,10 +97,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private PlaceAutocompleteFragment mOriginAutocompleteFragment, mDestinationAutocompleteFragment;
     private ListView lv;
     ArrayList<RouteOption> temp;
-    //public Recycler_View_Adapter adapter;
-    //public static RecyclerView recyclerView;
 
-    //Button
+
+    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("path/to/geofire");
+    GeoFire geoFire = new GeoFire(ref);
+
+
+
+
+    // Menu Bar
     public void Schedule() {
         btnSchedule = (ImageButton) findViewById(R.id.schedule);
         btnSchedule.setOnClickListener(new View.OnClickListener() {
@@ -95,27 +117,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    public void Alerts(){
+    public void Alerts() {
         btnAlerts = (ImageButton) findViewById(R.id.btnAlerts);
-        btnAlerts.setOnClickListener(new View.OnClickListener(){
+        btnAlerts.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 Intent alerts = new Intent(MapsActivity.this, AlertActivity.class);
                 startActivity(alerts);
             }
         });
     }
-    public void Maps(){
+
+    public void Maps() {
         btnMaps = (ImageButton) findViewById(R.id.planner);
-        btnMaps.setOnClickListener(new View.OnClickListener(){
+        btnMaps.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 Intent alerts = new Intent(MapsActivity.this, MapsActivity.class);
                 startActivity(alerts);
             }
         });
     }
-    public void offMap(){
+
+    public void offMap() {
         btnoffMap = (ImageButton) findViewById(R.id.offlinemap);
         btnoffMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,7 +149,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-    public void Settings(){
+
+    public void Settings() {
         btnSetting = (ImageButton) findViewById(R.id.setting);
         btnSetting.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,21 +163,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //recyclerView = (RecyclerView) findViewById(R.id.recycler_view_route);
-        //adapter = new Recycler_Route_Adapter(list, getApplication());
-        //recyclerView.setAdapter(adapter);
-        //recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        //temp=RouteLister.routeList;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        //recyclerView= (RecyclerView) findViewById(R.id.recycler_view_route);
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
         mOrigin = "";
         mDestination = "";
+
 
         //Search Button
         searchButton = (Button) findViewById(R.id.searchButton);
@@ -160,30 +180,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 sendRequest();
-                //temp=RouteLister.routeList;
-                //Log.i("testing2",String.valueOf(temp.size()));
+                ;
 
-                 }
+            }
         });
 
         routeButton = (ImageView) findViewById(R.id.routeButton);
         routeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent routeActivity = new Intent(MapsActivity.this, com.example.atif.maps_.routeActivity.class);
-                //startActivity(routeActivity);
                 temp = RouteLister.routeList;
-                Intent i = new Intent(MapsActivity.this,routeActivity.class);
-                i.putExtra("FILES_TO_SEND",temp);
+                Intent i = new Intent(MapsActivity.this, routeActivity.class);
+                i.putExtra("FILES_TO_SEND", temp);
                 startActivity(i);
 
-                //temp=RouteLister.routeList;
-                //Log.i("testing2",String.valueOf(temp.size()));
 
             }
         });
-
-
 
 
         //Google Start Search Bar
@@ -223,6 +236,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Schedule();
         Settings();
 
+
     }
 
     //Search Button Request
@@ -230,16 +244,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mOrigin.isEmpty()) {
             Toast.makeText(this, "Please enter origin address!", Toast.LENGTH_SHORT).show();
 
-        }
-        else if (mDestination.isEmpty()) {
+        } else if (mDestination.isEmpty()) {
             Toast.makeText(this, "Please enter destination address!", Toast.LENGTH_SHORT).show();
 
-        }
-        else if (mOrigin.isEmpty() && mDestination.isEmpty()) {
+        } else if (mOrigin.isEmpty() && mDestination.isEmpty()) {
             Toast.makeText(this, "Please enter a starting and destination address", Toast.LENGTH_SHORT).show();
 
-        }
-        else {
+        } else {
             try {
                 new DirectionFinder(this, mOrigin, mDestination).execute();
                 new RouteLister(MapsActivity.this, mOrigin, mDestination).execute();
@@ -254,13 +265,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(NEWYORK.getCenter(), 10));
         LatLng newyork = new LatLng(40.758879, -73.985110);
-        //mMap.addMarker(new MarkerOptions().position(newyork).title("Marker in New York"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(newyork));
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setOnPoiClickListener(this);
         mMap.getUiSettings().setMapToolbarEnabled(false);
+
+
+        //Location Permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
         } else {
@@ -269,9 +281,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
         try {
-            // Customise the styling of the base map using a JSON object defined
-            // in a raw resource file.
-            boolean success = mMap.setMapStyle(
+                      boolean success = mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             this, R.raw.style_json));
 
@@ -282,6 +292,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e("MapsActivityRaw", "Can't find style.", e);
         }
 
+
+        //Dropping Marker
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                //Log.v("latlng", latLng.latitude + "," + latLng.longitude);
+                Marker eventDrop = mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title("Select Event:")
+                        .snippet("Police Investigation")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
+                        .draggable(false));
+
+
+            }
+        });
+
+
+
+
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Toast.makeText(this, "Info window clicked",
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -308,6 +344,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+
+    //After Permission granted for location
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -337,8 +375,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
             ((TextView) findViewById(R.id.tvDuration)).setText(route.duration.text);
             ((TextView) findViewById(R.id.tvDistance)).setText(route.distance.text);
-            //Toast.makeText(getApplicationContext(), route.htmlinstructions, Toast.LENGTH_LONG ).show();
-
 
             originMarkers.add(mMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
@@ -352,8 +388,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             PolylineOptions polylineOptions = new PolylineOptions()
                     .geodesic(true)
                     .color(Color.BLUE)
-                    .width(10)
-                    ;
+                    .width(10);
 
             for (int i = 0; i < route.points.size(); i++)
                 polylineOptions.add(route.points.get(i));
@@ -379,5 +414,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+//geoFire.setLocation("firebase-hq", new GeoLocation(37.7853889, -122.4056973));
+
+    public void setLocationCords(){
+        geoFire.setLocation("firebase-hq", new GeoLocation(37.7853889, -122.4056973));
+    }
+
 }
+
+
+
 

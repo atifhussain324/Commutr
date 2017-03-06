@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1054297690837",
+    "firebase_url": "https://commutr-149323.firebaseio.com",
+    "project_id": "commutr-149323",
+    "storage_bucket": "commutr-149323.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1054297690837:android:6b1efbd6da33e7ca",
+        "android_client_info": {
+          "package_name": "com.example.atif.maps_"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1054297690837-du65bn24cthjamah4cbtap4jr2gj2sgr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.atif.maps_",
+            "certificate_hash": "6a6535879b3d86108020260c7ac15dc9df88a614"
+          }
+        },
+        {
+          "client_id": "1054297690837-g2uglsuuj2t40vn07dgs3l8gu3usfvi7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKaFk2Z_POFDeMHuttGviU84Mldb2V-LI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1054297690837-g2uglsuuj2t40vn07dgs3l8gu3usfvi7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

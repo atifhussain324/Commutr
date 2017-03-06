@@ -12,8 +12,8 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/mainicon"
-        android:label="@string/app_name"
+        android:icon="@mipmap/launch_icon"
+        android:label="Commutr"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
