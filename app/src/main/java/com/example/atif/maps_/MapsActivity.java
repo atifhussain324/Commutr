@@ -39,10 +39,12 @@ import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
@@ -61,6 +63,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -76,7 +79,7 @@ import Modules.Route;
 import Modules.RouteLister;
 import Modules.RouteOption;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener, GoogleMap.OnInfoWindowClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener, GoogleMap.OnInfoWindowClickListener{
 
     ImageButton btnAlerts;
     ImageButton btnMaps;
@@ -99,8 +102,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ArrayList<RouteOption> temp;
 
 
-    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("path/to/geofire");
+    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users/location");
     GeoFire geoFire = new GeoFire(ref);
+    //GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mMap.getMyLocation());
 
 
 
@@ -236,8 +240,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Schedule();
         Settings();
 
-
+        //geoFire.setLocation("", new GeoLocation(37.7853889, -122.4056973));
+        //geoFire.setLocation("1", new GeoLocation(69.7853889, -120.4056973));
+       // geoFire.setLocation("test2", new GeoLocation(100,120));
+//myRef.setValue("Hello World");
     }
+
+
 
     //Search Button Request
     private void sendRequest() {
@@ -305,10 +314,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
                         .draggable(false));
 
+                geoFire.setLocation("Drop1",new GeoLocation(latLng.latitude,latLng.longitude));
 
             }
         });
-
 
 
 
@@ -414,11 +423,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-//geoFire.setLocation("firebase-hq", new GeoLocation(37.7853889, -122.4056973));
 
-    public void setLocationCords(){
-        geoFire.setLocation("firebase-hq", new GeoLocation(37.7853889, -122.4056973));
-    }
+
 
 }
 
