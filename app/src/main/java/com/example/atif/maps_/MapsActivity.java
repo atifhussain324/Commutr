@@ -64,6 +64,8 @@ import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -105,6 +107,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users/location");
     GeoFire geoFire = new GeoFire(ref);
     //GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mMap.getMyLocation());
+    private FirebaseAuth.AuthStateListener authListener;
+    private FirebaseAuth mAuthListener;
 
 
 
@@ -244,6 +248,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //geoFire.setLocation("1", new GeoLocation(69.7853889, -120.4056973));
        // geoFire.setLocation("test2", new GeoLocation(100,120));
 //myRef.setValue("Hello World");
+
+
+        /*
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    //Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+                // ...
+            }
+        };
+        */
+
     }
 
 
@@ -303,6 +326,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         //Dropping Marker
+        /*
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
@@ -313,12 +337,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .snippet("Police Investigation")
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
                         .draggable(false));
-
-                geoFire.setLocation("Drop1",new GeoLocation(latLng.latitude,latLng.longitude));
+FirebaseUser user = firba
+                geoFire.setLocation(,new GeoLocation(latLng.latitude,latLng.longitude));
 
             }
         });
-
+        */
 
 
     }
@@ -422,6 +446,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+
 
 
 

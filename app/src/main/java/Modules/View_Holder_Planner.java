@@ -20,6 +20,7 @@ public class View_Holder_Planner extends RecyclerView.ViewHolder {
     TextView title2;
     TextView title3;
     TextView title4;
+    CardView cardView;
 
 
 
@@ -31,6 +32,7 @@ public class View_Holder_Planner extends RecyclerView.ViewHolder {
         title2 = (TextView) itemView.findViewById(R.id.title2);
         title3 = (TextView) itemView.findViewById(R.id.title3);
         title4 = (TextView) itemView.findViewById(R.id.title4);
+        cardView = (CardView) itemView.findViewById(R.id.cardView);
 
 
 
