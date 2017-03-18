@@ -34,7 +34,7 @@ public class offMap extends AppCompatActivity implements OnTouchListener {
     PointF mid = new PointF();
     float oldDist = 1f;
 
-
+/*
     //Button
     public void Schedule() {
         btnSchedule = (ImageButton) findViewById(R.id.schedule);
@@ -86,6 +86,10 @@ public class offMap extends AppCompatActivity implements OnTouchListener {
             }
         });
     }
+
+
+    */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,11 +98,11 @@ public class offMap extends AppCompatActivity implements OnTouchListener {
         view.setOnTouchListener(this);
 
         //Activity Button
-        Alerts();
-        Maps();
-        offMap();
-        Schedule();
-        Settings();
+        //Alerts();
+       // Maps();
+        //offMap();
+        //Schedule();
+       // Settings();
     }
     @Override
     public boolean onTouch(View v, MotionEvent event)

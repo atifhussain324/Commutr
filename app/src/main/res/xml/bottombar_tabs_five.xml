@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        id="@+id/tab_schedule"
+        icon="@drawable/ic_schedule_black_24dp"
+        title="Schedule"
+        barColorWhenSelected="#2A3D45" />
+    <tab
+        id="@+id/tab_nearby"
+        icon="@drawable/ic_near_me_black_24dp"
+        title="Nearby"
+        barColorWhenSelected="#D88373" />
+    <tab
+        id="@+id/tab_planner"
+        icon="@drawable/ic_map_black_24dp"
+        title="Planner"
+        barColorWhenSelected="#2A3D45" />
+    <tab
+        id="@+id/tab_alerts"
+        icon="@drawable/ic_notifications_active_black_24dp"
+        title="Alerts"
+        barColorWhenSelected="#75485E" />
+    <tab
+        id="@+id/tab_profile"
+        icon="@drawable/ic_person_black_24dp"
+        title="Profile"
+        barColorWhenSelected="#32021F" />
+</tabs>

@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.location.Location;
 import android.os.Build;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -25,12 +26,15 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -50,11 +54,13 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -67,10 +73,17 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabReselectListener;
+import com.roughike.bottombar.OnTabSelectListener;
+import com.roughike.swipeselector.SwipeItem;
+import com.roughike.swipeselector.SwipeSelector;
 
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import Modules.DirectionFinder;
 import Modules.DirectionFinderListener;
@@ -79,19 +92,17 @@ import Modules.Route;
 import Modules.RouteLister;
 import Modules.RouteOption;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener, GoogleMap.OnInfoWindowClickListener{
+import static com.example.atif.maps_.R.id.bottomBar;
 
-    ImageButton btnAlerts;
-    ImageButton btnMaps;
-    ImageButton btnSchedule;
-    ImageButton btnoffMap;
-    ImageButton btnSetting;
-    private GoogleMap mMap;
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener, GoogleMap.OnInfoWindowClickListener {
+
     private static final int MY_PERMISSION_FINE_LOCATION = 101;
+    ArrayList<RouteOption> temp;
+    ArrayList<MapsActivity> mSelectedItems;
+
+    private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private String locationName;
-    private Button searchButton;
-    private ImageView routeButton;
     private String mOrigin, mDestination;
     private ProgressDialog progressDialog;
     private List<Marker> originMarkers = new ArrayList<>();
@@ -99,71 +110,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Polyline> polylinePaths = new ArrayList<>();
     private PlaceAutocompleteFragment mOriginAutocompleteFragment, mDestinationAutocompleteFragment;
     private ListView lv;
-    ArrayList<RouteOption> temp;
-
-
+    //GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mMap.getMyLocation());
     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users/location");
     GeoFire geoFire = new GeoFire(ref);
-    //GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mMap.getMyLocation());
 
 
 
 
-    // Menu Bar
-    public void Schedule() {
-        btnSchedule = (ImageButton) findViewById(R.id.schedule);
-        btnSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent time = new Intent(MapsActivity.this, trainSchedule.class);
-                startActivity(time);
-            }
-        });
-    }
-
-    public void Alerts() {
-        btnAlerts = (ImageButton) findViewById(R.id.btnAlerts);
-        btnAlerts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent alerts = new Intent(MapsActivity.this, AlertActivity.class);
-                startActivity(alerts);
-            }
-        });
-    }
-
-    public void Maps() {
-        btnMaps = (ImageButton) findViewById(R.id.planner);
-        btnMaps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent alerts = new Intent(MapsActivity.this, MapsActivity.class);
-                startActivity(alerts);
-            }
-        });
-    }
-
-    public void offMap() {
-        btnoffMap = (ImageButton) findViewById(R.id.offlinemap);
-        btnoffMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent offMaps = new Intent(MapsActivity.this, offMap.class);
-                startActivity(offMaps);
-            }
-        });
-    }
-
-    public void Settings() {
-        btnSetting = (ImageButton) findViewById(R.id.setting);
-        btnSetting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent setting = new Intent(MapsActivity.this, SettingsActivity.class);
-                startActivity(setting);
-            }
-        });
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,37 +127,143 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //Bottom Navigation Bar
+        BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(@IdRes int tabId) {
+                if (tabId == R.id.tab_planner) {
+                    Intent planner = new Intent(MapsActivity.this, MapsActivity.class);
+                    startActivity(planner);
+                } else if (tabId == R.id.tab_nearby) {
+                    Intent offlineMap = new Intent(MapsActivity.this, offMap.class);
+                    startActivity(offlineMap);
+                } //else if (tabId == R.id.tab_schedule) {
+                //Intent schedule = new Intent(MapsActivity.this, trainSchedule.class);
+                //startActivity(schedule);
+                //}
+                else if (tabId == R.id.tab_alerts) {
+                    Intent alerts = new Intent(MapsActivity.this, AlertActivity.class);
+                    startActivity(alerts);
+                } else if (tabId == R.id.tab_profile) {
+                    Intent setting = new Intent(MapsActivity.this, SettingsActivity.class);
+                    startActivity(setting);
+                }
+            }
+
+        });
+
+        // Top Bar
+        BottomBar bottomBar2 = (BottomBar) findViewById(R.id.bottomBar2);
+        bottomBar2.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(@IdRes int tabId) {
+                if (tabId == R.id.tab_search) {
+                    sendRequest();
+                } else if (tabId == R.id.tab_directions) {
+                    temp = RouteLister.routeList;
+                    Intent i = new Intent(MapsActivity.this, routeActivity.class);
+                    i.putExtra("FILES_TO_SEND", temp);
+                    startActivity(i);
+                } /*else if (tabId == R.id.tab_preference_menu) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this, R.style.AppCompatAlertDialogStyle);
+                    mSelectedItems = new ArrayList();
+
+                    builder.setTitle("Route Preferences");
+                    builder.setMultiChoiceItems(R.array.perferences, null, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int which, boolean isSelected) {
+                            if (isSelected) {
+                                System.out.println("test");
+                            } else if (mSelectedItems.contains(which)) {
+                                mSelectedItems.remove(Integer.valueOf(which));
+                            }
+                        }
+                    });
+                    builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+
+                    builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+                    builder.show();
+                }*/
+
+            }
+
+        });
+
+        // Top Bar Reselect
+        bottomBar2.setOnTabReselectListener(new OnTabReselectListener() {
+            @Override
+            public void onTabReSelected(@IdRes int tabId) {
+                if (tabId == R.id.tab_search) {
+                    if (mOrigin.isEmpty()) {
+                        Toast.makeText(MapsActivity.this, "Please enter origin address!", Toast.LENGTH_SHORT).show();
+
+                    } else if (mDestination.isEmpty()) {
+                        Toast.makeText(MapsActivity.this, "Please enter destination address!", Toast.LENGTH_SHORT).show();
+
+                    } else if (mOrigin.isEmpty() && mDestination.isEmpty()) {
+                        Toast.makeText(MapsActivity.this, "Please enter a starting and destination address", Toast.LENGTH_SHORT).show();
+                    } else sendRequest();
+                }
+                if (tabId == R.id.tab_directions) {
+                    temp = RouteLister.routeList;
+                    Intent i = new Intent(MapsActivity.this, routeActivity.class);
+                    i.putExtra("FILES_TO_SEND", temp);
+                    startActivity(i);
+                }
+                if (tabId == R.id.tab_preference_menu) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this, R.style.AppCompatAlertDialogStyle);
+                    mSelectedItems = new ArrayList();
+
+                    builder.setTitle("Route Preferences");
+                    builder.setMultiChoiceItems(R.array.perferences, null, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int which, boolean isSelected) {
+                            if (isSelected) {
+                                System.out.println("test");
+                            } else if (mSelectedItems.contains(which)) {
+                                mSelectedItems.remove(Integer.valueOf(which));
+                            }
+                        }
+                    });
+                    builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+
+                    builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+                    builder.show();
+                }
+            }
+        });
+
         mOrigin = "";
         mDestination = "";
 
 
-        //Search Button
-        searchButton = (Button) findViewById(R.id.searchButton);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendRequest();
-                ;
-
-            }
-        });
-
-        routeButton = (ImageView) findViewById(R.id.routeButton);
-        routeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                temp = RouteLister.routeList;
-                Intent i = new Intent(MapsActivity.this, routeActivity.class);
-                i.putExtra("FILES_TO_SEND", temp);
-                startActivity(i);
-
-
-            }
-        });
-
-
         //Google Start Search Bar
-        mOriginAutocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_origin);
+        mOriginAutocompleteFragment = (PlaceAutocompleteFragment)
+
+                getFragmentManager().
+
+                        findFragmentById(R.id.place_autocomplete_origin);
         mOriginAutocompleteFragment.setHint("Start");
         mOriginAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -220,7 +279,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         //Google Destination Search Bar
-        mDestinationAutocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_destination);
+        mDestinationAutocompleteFragment = (PlaceAutocompleteFragment)
+
+                getFragmentManager().
+
+                        findFragmentById(R.id.place_autocomplete_destination);
         mDestinationAutocompleteFragment.setHint("Destination");
         mDestinationAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -234,18 +297,57 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        Alerts();
-        Maps();
-        offMap();
-        Schedule();
-        Settings();
+        //Alerts();
+        //  Maps();
+        // offMap();
+        // Schedule();
+        // Settings();
 
-        //geoFire.setLocation("", new GeoLocation(37.7853889, -122.4056973));
-        //geoFire.setLocation("1", new GeoLocation(69.7853889, -120.4056973));
-       // geoFire.setLocation("test2", new GeoLocation(100,120));
-//myRef.setValue("Hello World");
+
+
+        /* AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+mSelectedItems = new ArrayList<>();
+        builder.setTitle("Route Preferences");
+        builder.setSingleChoiceItems(R.array.perferences, null, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                    mSelectedItems.add();
+
+            }
+        });
+
+*/
+/*
+        SwipeSelector swipeSelector = (SwipeSelector) findViewById(R.id.swipeSelector);
+        swipeSelector.setItems(
+                new SwipeItem(0, "Police Investigation", "Description for slide one."),
+                new SwipeItem(1, "Sick Passenger", "Description for slide two."),
+                new SwipeItem(2, "Train Traffic", "Description for slide three."),
+                new SwipeItem(3, "Signal Malfunction", "Description for slide four.")
+
+        );
+
+
+        SwipeSelector swipeSelector2 = (SwipeSelector) findViewById(R.id.swipeSelector2);
+        swipeSelector2.setItems(
+                new SwipeItem(0, "1 Train", "Description for slide one."),
+                new SwipeItem(1, "2 Train", "Description for slide two."),
+                new SwipeItem(2, "3 Train", "Description for slide three."),
+                new SwipeItem(3, "4 Train", "Description for slide four.")
+        );
+
+        SwipeSelector swipeSelector3 = (SwipeSelector) findViewById(R.id.swipeSelector3);
+        swipeSelector3.setItems(
+                new SwipeItem(0, "Uptown", "Description for slide one."),
+                new SwipeItem(1, "Downtown", "Description for slide two.")
+
+        );*/
+
+
+
+
+
     }
-
 
 
     //Search Button Request
@@ -275,7 +377,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         LatLng newyork = new LatLng(40.758879, -73.985110);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(newyork));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newyork, 12));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(newyork));
+
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setOnPoiClickListener(this);
         mMap.getUiSettings().setMapToolbarEnabled(false);
@@ -290,35 +394,67 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
         try {
-                      boolean success = mMap.setMapStyle(
+            boolean success = mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             this, R.raw.style_json));
 
             if (!success) {
-                Log.e("MapsActivityRaw", "Style parsing failed.");
+
             }
         } catch (Resources.NotFoundException e) {
-            Log.e("MapsActivityRaw", "Can't find style.", e);
+
         }
 
 
         //Dropping Marker
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
-            public void onMapLongClick(LatLng latLng) {
+            public void onMapLongClick(final LatLng latLng) {
                 //Log.v("latlng", latLng.latitude + "," + latLng.longitude);
-                Marker eventDrop = mMap.addMarker(new MarkerOptions()
-                        .position(latLng)
-                        .title("Select Event:")
-                        .snippet("Police Investigation")
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
-                        .draggable(false));
 
-                geoFire.setLocation("Drop1",new GeoLocation(latLng.latitude,latLng.longitude));
+                LayoutInflater inflater = getLayoutInflater();
+                View dialoglayout = inflater.inflate(R.layout.drop_dialog, null);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+                builder.setView(dialoglayout);
+                builder.show();
+
+
+
+
+
+
+            /*    builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Marker eventDrop = mMap.addMarker(new MarkerOptions()
+                                .position(latLng)
+                                .title("Select Event:")
+                                .snippet("Police Investigation")
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
+                                .draggable(false));
+                        geoFire.setLocation("Drop1", new GeoLocation(latLng.latitude, latLng.longitude));
+                    }
+                });
+
+                builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });*/
+
+
+
+
+
 
             }
-        });
 
+
+
+
+        });
 
 
     }
@@ -382,8 +518,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         for (Route route : routes) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
-            ((TextView) findViewById(R.id.tvDuration)).setText(route.duration.text);
-            ((TextView) findViewById(R.id.tvDistance)).setText(route.distance.text);
+            // ((TextView) findViewById(R.id.tvDuration)).setText(route.duration.text);
+            // ((TextView) findViewById(R.id.tvDistance)).setText(route.distance.text);
 
             originMarkers.add(mMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
@@ -422,8 +558,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
-
-
 
 
 }

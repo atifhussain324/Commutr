@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -25,6 +26,8 @@ import android.widget.Toast;
 import com.google.transit.realtime.GtfsRealtime;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabSelectListener;
 
 import java.net.URL;
 import java.sql.Connection;
@@ -47,57 +50,6 @@ public class AlertActivity extends AppCompatActivity {
     ImageButton btnoffMap;
     ImageButton btnSetting;
 
-    //Button
-    public void Schedule() {
-        btnSchedule = (ImageButton) findViewById(R.id.schedule);
-        btnSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent time = new Intent(AlertActivity.this, trainSchedule.class);
-                startActivity(time);
-            }
-        });
-    }
-    public void Alerts(){
-        btnAlerts = (ImageButton) findViewById(R.id.btnAlerts);
-        btnAlerts.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Intent alerts = new Intent(AlertActivity.this, AlertActivity.class);
-                startActivity(alerts);
-            }
-        });
-    }
-    public void Maps(){
-        btnMaps = (ImageButton) findViewById(R.id.planner);
-        btnMaps.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Intent alerts = new Intent(AlertActivity.this, MapsActivity.class);
-                startActivity(alerts);
-            }
-        });
-    }
-    public void offMap(){
-        btnoffMap = (ImageButton) findViewById(R.id.offlinemap);
-        btnoffMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent offMaps = new Intent(AlertActivity.this, offMap.class);
-                startActivity(offMaps);
-            }
-        });
-    }
-    public void Settings(){
-        btnSetting = (ImageButton) findViewById(R.id.setting);
-        btnSetting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent setting = new Intent(AlertActivity.this, SettingsActivity.class);
-                startActivity(setting);
-            }
-        });
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,11 +75,16 @@ public class AlertActivity extends AppCompatActivity {
             }
         }, 0, period);
 
-        Alerts();
-        Maps();
-        offMap();
-        Schedule();
-        Settings();
+
+
+
+
+
+        //Alerts();
+       // Maps();
+        //offMap();
+        //Schedule();
+        //Settings();
 
     }
 

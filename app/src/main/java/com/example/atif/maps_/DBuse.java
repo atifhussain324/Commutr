@@ -36,6 +36,7 @@ public class DBuse extends AppCompatActivity {
     private String message;
     private Connection conn;
 
+    /*
     //Button
     public void Schedule() {
         btnSchedule = (ImageButton) findViewById(R.id.schedule);
@@ -88,6 +89,7 @@ public class DBuse extends AppCompatActivity {
             }
         });
     }
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,11 +112,11 @@ public class DBuse extends AppCompatActivity {
             }
         });
 
-        Alerts();
-        Maps();
-        offMap();
-        Schedule();
-        Settings();
+        //Alerts();
+        //Maps();
+       // offMap();
+       // Schedule();
+        //Settings();
     }
 
     private class getTrainInfo extends AsyncTask<Void, Void, Void> {

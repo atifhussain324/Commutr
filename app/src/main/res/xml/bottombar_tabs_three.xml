@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        id="@+id/tab_preference_menu"
+        icon="@drawable/ic_menu_black_24dp"
+        title="Options"
+        barColorWhenSelected="#D88373"/>
+    <tab
+        id="@+id/tab_directions"
+        icon="@drawable/ic_directions_black_24dp"
+        title="Directions"
+        barColorWhenSelected="#D88373"/>
+    <tab
+        id="@+id/tab_search"
+        icon="@drawable/ic_search_black_24dp"
+        title="Search"
+        barColorWhenSelected="#D88373" />
+</tabs>

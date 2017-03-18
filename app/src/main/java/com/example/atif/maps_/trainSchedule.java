@@ -28,7 +28,7 @@ public class trainSchedule extends AppCompatActivity {
     ListView listview;
     public final static String MESSAGE_KEY = "com.example.atif.commutr_.message_key";
 
-
+/*
     //Button
     public void Schedule() {
         btnSchedule = (ImageButton) findViewById(R.id.schedule);
@@ -81,7 +81,7 @@ public class trainSchedule extends AppCompatActivity {
             }
         });
     }
-
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,11 +107,11 @@ public class trainSchedule extends AppCompatActivity {
 
 
         //access different activity in ImageButton
-        Alerts();
-        Maps();
-        offMap();
-        Schedule();
-        Settings();
+       // Alerts();
+        //Maps();
+        //offMap();
+        //Schedule();
+       // Settings();
 
     }
     private class getTrainInfo extends AsyncTask<Void, Void, Void>{

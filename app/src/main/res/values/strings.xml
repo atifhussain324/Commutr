@@ -88,4 +88,15 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <string-array name="perferences">
+        <item>Less Walking</item>
+        <item>More Transfers</item>
+        <item>Best Route</item>
+    </string-array>
+
+
+    <string name="OK">Okay</string>
+    <string name="Cancel">Cancel</string>
+    <string name="title_activity_drop2">DropActivity2</string>
 </resources>
