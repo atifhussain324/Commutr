@@ -18,6 +18,7 @@ public class RouteOption implements Serializable{
     private String tStepDuration;
     private String tShortName;
     private String tLongName;
+    private String color;
 
     //Walking Fields
     private String wName;
@@ -54,6 +55,9 @@ public class RouteOption implements Serializable{
     public void settLongName(String lName){
         tLongName= lName;
     }
+    public void setColor(String bColor){
+        color= bColor;
+    }
 
     public void setwName(String name){
         wName= name;
@@ -70,6 +74,7 @@ public class RouteOption implements Serializable{
     public void setTravel_mode(String tmode){
         travel_mode= tmode;
     }
+
 
 
 
@@ -119,6 +124,9 @@ public class RouteOption implements Serializable{
     }
     public String getTravel_mode(){
         return travel_mode;
+    }
+    public String getColor(){
+        return color;
     }
 
 }

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import Modules.Recycler_Route_Adapter;
 import Modules.Route;
+import Modules.RouteLister;
 import Modules.RouteOption;
 
 public class routeActivity extends AppCompatActivity {
@@ -30,6 +31,8 @@ public class routeActivity extends AppCompatActivity {
 
         Recycler_Route_Adapter adapter = new Recycler_Route_Adapter(routeList, getApplication());
         recyclerView.setAdapter(adapter);
+
+        RouteLister.routeList.clear();
 
 
 

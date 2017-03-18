@@ -70,6 +70,8 @@ import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -113,6 +115,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mMap.getMyLocation());
     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users/location");
     GeoFire geoFire = new GeoFire(ref);
+    //GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mMap.getMyLocation());
+    private FirebaseAuth.AuthStateListener authListener;
+    private FirebaseAuth mAuthListener;
 
 
 
@@ -558,6 +563,8 @@ mSelectedItems = new ArrayList<>();
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+
 
 
 }

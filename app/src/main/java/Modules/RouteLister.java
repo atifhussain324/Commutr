@@ -150,6 +150,8 @@ public class RouteLister {
                         int tStops = stepsArray.getJSONObject(i).getJSONObject("transit_details").getInt("num_stops");
                         String tStepDur = stepsArray.getJSONObject(i).getJSONObject("duration").getString("text");
                         String travel_mode= stepsArray.getJSONObject(i).getString("travel_mode");
+                        String color = stepsArray.getJSONObject(i).getJSONObject("transit_details").getJSONObject("line").getString("color");
+                        Log.i("testingFinal2",color);
 
                         routeOption.setTravel_mode(travel_mode);
                         routeOption.settName(tName);
@@ -158,6 +160,7 @@ public class RouteLister {
                         routeOption.settLongName(trainLongName);
                         routeOption.settStops(tStops);
                         routeOption.settStepDuration(tStepDur);
+                        routeOption.setColor(color);
 
 
 

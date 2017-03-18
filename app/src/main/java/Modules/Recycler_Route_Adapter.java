@@ -1,6 +1,8 @@
 package Modules;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -56,7 +58,9 @@ public class Recycler_Route_Adapter  extends RecyclerView.Adapter<View_Holder_Pl
             holder.title1.setText(list.get(position).getName());
             holder.title2.setText(list.get(position).gettShortName()+" "+list.get(position).gettLongName());
             holder.title3.setText(list.get(position).getInstruction());
-            holder.title4.setText(list.get(position).getStops()+" "+list.get(position).getStepDuration());
+            holder.title4.setText(list.get(position).getStops()+" Stops, "+list.get(position).getStepDuration());
+            //holder.cardView.setCardBackgroundColor(Color.parseColor(list.get(position).getColor()));
+            //holder.cardView.getBackground().setColorFilter(Color.parseColor(list.get(position).getColor()), PorterDuff.Mode.DARKEN);
 
         }
 
