@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,7 +23,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private static final String TAG = "LoginActivity";
-    private Button btnLogin, btnLinkToSignUp;
+    private Button btnLogin;
+    private TextView btnLinkToSignUp;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
     private EditText loginInputEmail, loginInputPassword;
@@ -32,7 +34,13 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_newlogin);
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
         auth = FirebaseAuth.getInstance();
 
         loginInputLayoutEmail = (TextInputLayout) findViewById(R.id.login_input_layout_email);
@@ -43,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         loginInputPassword = (EditText) findViewById(R.id.login_input_password);
 
         btnLogin = (Button) findViewById(R.id.btn_login);
-        btnLinkToSignUp = (Button) findViewById(R.id.btn_link_signup);
+        btnLinkToSignUp = (TextView) findViewById(R.id.btn_link_signup);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 
     /**

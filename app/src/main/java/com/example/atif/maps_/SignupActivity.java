@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,7 +25,8 @@ import com.google.firebase.auth.FirebaseAuth;
 public class SignupActivity extends AppCompatActivity {
 
     private static final String TAG = "SignupActivity" ;
-    private Button btnSignUp,btnLinkToLogIn;
+    private Button btnSignUp;
+    private TextView btnLinkToLogIn;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
     private EditText signupInputEmail, signupInputPassword;
@@ -34,8 +36,13 @@ public class SignupActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup);
+        setContentView(R.layout.activity_newsignup);
         auth = FirebaseAuth.getInstance();
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
 
         signupInputLayoutEmail = (TextInputLayout) findViewById(R.id.signup_input_layout_email);
         signupInputLayoutPassword = (TextInputLayout) findViewById(R.id.signup_input_layout_password);
@@ -45,7 +52,7 @@ public class SignupActivity extends AppCompatActivity {
         signupInputPassword = (EditText) findViewById(R.id.signup_input_password);
 
         btnSignUp = (Button) findViewById(R.id.btn_signup);
-        btnLinkToLogIn = (Button) findViewById(R.id.btn_link_login);
+        btnLinkToLogIn = (TextView) findViewById(R.id.link_login);
 
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +66,7 @@ public class SignupActivity extends AppCompatActivity {
         btnLinkToLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                Intent intent = new Intent(com.example.atif.maps_.SignupActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
@@ -97,7 +104,7 @@ public class SignupActivity extends AppCompatActivity {
                             Log.d(TAG,"Authentication failed." + task.getException());
 
                         } else {
-                            startActivity(new Intent(SignupActivity.this, UserActivity.class));
+                            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
                             finish();
                         }
                     }
