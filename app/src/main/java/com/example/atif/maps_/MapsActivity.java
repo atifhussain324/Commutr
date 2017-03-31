@@ -1,42 +1,24 @@
 package com.example.atif.maps_;
 
-import android.*;
 import android.Manifest;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.location.Location;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,32 +26,28 @@ import android.widget.Toast;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
-import com.google.android.gms.ads.formats.NativeAd;
+import com.firebase.geofire.GeoQueryEventListener;
+import com.firebase.geofire.LocationCallback;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
@@ -81,27 +59,22 @@ import com.roughike.bottombar.OnTabSelectListener;
 import com.roughike.swipeselector.SwipeItem;
 import com.roughike.swipeselector.SwipeSelector;
 
-import java.io.UnsupportedEncodingException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import Modules.DirectionFinder;
 import Modules.DirectionFinderListener;
-import Modules.Recycler_Route_Adapter;
 import Modules.Route;
 import Modules.RouteLister;
 import Modules.RouteOption;
 
-import static com.example.atif.maps_.R.id.bottomBar;
-
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener, GoogleMap.OnInfoWindowClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener, GoogleMap.OnInfoWindowClickListener, LocationListener, GoogleApiClient.ConnectionCallbacks {
 
     private static final int MY_PERMISSION_FINE_LOCATION = 101;
     ArrayList<RouteOption> temp;
     ArrayList<MapsActivity> mSelectedItems;
-
+    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+    GeoFire geoFire = new GeoFire(ref);
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private String locationName;
@@ -112,15 +85,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Polyline> polylinePaths = new ArrayList<>();
     private PlaceAutocompleteFragment mOriginAutocompleteFragment, mDestinationAutocompleteFragment;
     private ListView lv;
-    //GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mMap.getMyLocation());
-    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users/location");
-    GeoFire geoFire = new GeoFire(ref);
-    //GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mMap.getMyLocation());
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth mAuthListener;
 
+    private String Userid;
 
+    Location mLastLocation;
+    private double mLatitudeText;
+    private double mLongitudeText;
 
+    GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mLatitudeText, mLongitudeText), 1.0);
 
 
     @Override
@@ -143,11 +117,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else if (tabId == R.id.tab_nearby) {
                     Intent offlineMap = new Intent(MapsActivity.this, offMap.class);
                     startActivity(offlineMap);
-                } //else if (tabId == R.id.tab_schedule) {
-                //Intent schedule = new Intent(MapsActivity.this, trainSchedule.class);
-                //startActivity(schedule);
-                //}
-                else if (tabId == R.id.tab_alerts) {
+                } /*else if (tabId == R.id.tab_schedule) {
+                    Intent schedule = new Intent(MapsActivity.this, trainSchedule.class);
+                    startActivity(schedule);
+                } */ else if (tabId == R.id.tab_alerts) {
                     Intent alerts = new Intent(MapsActivity.this, AlertActivity.class);
                     startActivity(alerts);
                 } else if (tabId == R.id.tab_profile) {
@@ -302,58 +275,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        //Alerts();
-        //  Maps();
-        // offMap();
-        // Schedule();
-        // Settings();
 
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
 
-
-        /* AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
-mSelectedItems = new ArrayList<>();
-        builder.setTitle("Route Preferences");
-        builder.setSingleChoiceItems(R.array.perferences, null, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int which) {
-                    mSelectedItems.add();
-
-            }
-        });
-
-*/
-/*
-        SwipeSelector swipeSelector = (SwipeSelector) findViewById(R.id.swipeSelector);
-        swipeSelector.setItems(
-                new SwipeItem(0, "Police Investigation", "Description for slide one."),
-                new SwipeItem(1, "Sick Passenger", "Description for slide two."),
-                new SwipeItem(2, "Train Traffic", "Description for slide three."),
-                new SwipeItem(3, "Signal Malfunction", "Description for slide four.")
-
-        );
-
-
-        SwipeSelector swipeSelector2 = (SwipeSelector) findViewById(R.id.swipeSelector2);
-        swipeSelector2.setItems(
-                new SwipeItem(0, "1 Train", "Description for slide one."),
-                new SwipeItem(1, "2 Train", "Description for slide two."),
-                new SwipeItem(2, "3 Train", "Description for slide three."),
-                new SwipeItem(3, "4 Train", "Description for slide four.")
-        );
-
-        SwipeSelector swipeSelector3 = (SwipeSelector) findViewById(R.id.swipeSelector3);
-        swipeSelector3.setItems(
-                new SwipeItem(0, "Uptown", "Description for slide one."),
-                new SwipeItem(1, "Downtown", "Description for slide two.")
-
-        );*/
-
-
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = user.getUid();
+        System.out.println("USERID " + uid);
+        Userid = uid;
 
 
 
     }
-
 
     //Search Button Request
     private void sendRequest() {
@@ -381,9 +319,9 @@ mSelectedItems = new ArrayList<>();
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        LatLng newyork = new LatLng(40.758879, -73.985110);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newyork, 12));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(newyork));
+        LatLng new_york = new LatLng(40.758879, -73.985110);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new_york, 12));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(new_york));
 
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setOnPoiClickListener(this);
@@ -398,38 +336,83 @@ mSelectedItems = new ArrayList<>();
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_FINE_LOCATION);
             }
         }
-        try {
-            boolean success = mMap.setMapStyle(
-                    MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.style_json));
 
-            if (!success) {
-
-            }
-        } catch (Resources.NotFoundException e) {
-
-        }
+        //Map Style
+        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json));
 
 
         //Dropping Marker
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(final LatLng latLng) {
-                //Log.v("latlng", latLng.latitude + "," + latLng.longitude);
+                //Log.v("lat_lng", latLng.latitude + "," + latLng.longitude);
+                Marker eventDrop = mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title("Select Event:")
+                        .snippet("Police Investigation")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
+                        .draggable(false));
+                geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
 
+
+
+
+
+
+                /*AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
                 LayoutInflater inflater = getLayoutInflater();
-                View dialoglayout = inflater.inflate(R.layout.drop_dialog, null);
+                View dialogLayout = inflater.inflate(R.layout.drop_dialog, null);
+                builder.setView(dialogLayout);
+                builder.create();
+*/
+                /*SwipeSelector swipeSelector = (SwipeSelector) findViewById(R.id.swipeSelector);
+                swipeSelector.setItems(
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-                builder.setView(dialoglayout);
-                builder.show();
+                        new SwipeItem(0, "Police Investigation", "Description for slide one."),
+                        new SwipeItem(1, "Sick Passenger", "Description for slide two."),
+                        new SwipeItem(2, "Train Traffic", "Description for slide three."),
+                        new SwipeItem(3, "Signal Malfunction", "Description for slide four."),
+                        new SwipeItem(4, "FastTrack", "Description for slide four.")
 
+                );
 
+                SwipeSelector swipeSelector2 = (SwipeSelector) findViewById(R.id.swipeSelector2);
+                swipeSelector2.setItems(
+                        new SwipeItem(0, "1 Train", "Broadway-7th Avenue Local"),
+                        new SwipeItem(1, "2 Train", "Seventh Avenue Express"),
+                        new SwipeItem(2, "3 Train", "Seventh Avenue Express"),
+                        new SwipeItem(3, "4 Train", "Lexington Avenue Express"),
+                        new SwipeItem(4, "5 Train", "Lexington Avenue Express"),
+                        new SwipeItem(5, "6 Train", "Lexington Avenue Local/Pehlam Express"),
+                        new SwipeItem(6, "7 Train", "Flushing Local"),
+                        new SwipeItem(7, "A Train", "8th Avenue Express"),
+                        new SwipeItem(8, "B Train", "Central Park West Local/6th Avenue Express"),
+                        new SwipeItem(9, "C Train", "8th Avenue Local"),
+                        new SwipeItem(10, "D Train", "6th Avenue Express"),
+                        new SwipeItem(11, "E Train", "8th Avenue Local"),
+                        new SwipeItem(12, "F Train", "6th Avenue Local"),
+                        new SwipeItem(13, "G Train", "Brooklyn-Queens Crosstown Local"),
+                        new SwipeItem(14, "J Train", "Nassau Street Express"),
+                        new SwipeItem(15, "L Train", "14th Street-Canarsie Local"),
+                        new SwipeItem(16, "M Train", "Queens Blvd Local/6 Av Local/Myrtle Ave Local"),
+                        new SwipeItem(17, "N Train", "Broadway Express"),
+                        new SwipeItem(18, "Q Train", "Second Avenue/Broadway Express"),
+                        new SwipeItem(19, "R Train", "Queens Boulevard/Broadway/4th Avenue Local"),
+                        new SwipeItem(20, "W Train", "Broadway Local"),
+                        new SwipeItem(21, "Z Train", "Nassau Street Express"),
+                        new SwipeItem(22, "S Train", "42nd Street Shuttle")
 
+                );
 
+                SwipeSelector swipeSelector3 = (SwipeSelector) findViewById(R.id.swipeSelector3);
+                swipeSelector3.setItems(
+                        new SwipeItem(0, "Uptown", "Description for slide one."),
+                        new SwipeItem(1, "Downtown", "Description for slide two.")
 
+                );*/
+                //builder.show();
 
-            /*    builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                /*  builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Marker eventDrop = mMap.addMarker(new MarkerOptions()
@@ -449,19 +432,74 @@ mSelectedItems = new ArrayList<>();
                     }
                 });*/
 
+                geoFire.getLocation(Userid, new LocationCallback() {
+                    @Override
+                    public void onLocationResult(String key, GeoLocation location) {
+                        if (location != null) {
+                            System.out.println(String.format("The location for key %s is [%f,%f]", key, location.latitude, location.longitude));
+                        } else {
+                            System.out.println(String.format("There is no location for key %s in GeoFire", key));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        System.err.println("There was an error getting the GeoFire location: " + databaseError);
+                    }
 
 
-
-
-
+                });
             }
-
-
 
 
         });
 
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
 
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                //System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
+                Log.d("Tag1","Key %s entered the search area at [%f,%f]");
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+                //System.out.println(String.format("Key %s is no longer in the search area", key));
+                Log.d("Tag2","Key %s is no longer in the search area");
+
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+                //System.out.println(String.format("Key %s moved within the search area to [%f,%f]", key, location.latitude, location.longitude));
+                Log.d("Tag3","Key %s moved within the search area to [%f,%f]");
+
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+                //System.out.println("All initial data has been loaded and events have been fired!");
+                Log.d("Tag4","All initial data has been loaded and events have been fired!");
+
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+                //System.err.println("There was an error with this query: " + error);
+                Log.d("Tag5","There was an error with this query: ");
+
+            }
+        });
+    }
+
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
     }
 
     @Override
@@ -565,6 +603,31 @@ mSelectedItems = new ArrayList<>();
     }
 
 
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            mLatitudeText = Double.parseDouble(String.valueOf(mLastLocation.getLatitude()));
+
+            mLongitudeText = Double.parseDouble(String.valueOf(mLastLocation.getLongitude()));
+            Log.v("Mylocation", mLatitudeText + "," + mLongitudeText);
+
+        }
+    }
+
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
 
 
 }
