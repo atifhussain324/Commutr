@@ -1,11 +1,14 @@
 package com.example.atif.maps_;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.IdRes;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -19,15 +22,16 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drop_dialog);
-        new DBTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        //new DBTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        SwipeSelector swipeSelector = (SwipeSelector) findViewById(R.id.swipeSelector);
+       SwipeSelector swipeSelector = (SwipeSelector) findViewById(R.id.swipeSelector);
         swipeSelector.setItems(
 
                 new SwipeItem(0, "Police Investigation", "Description for slide one."),
@@ -74,10 +78,12 @@ public class MainActivity extends AppCompatActivity {
         );
 
 
+        //builder.setView(content);
 
 
     }
-    class DBTask extends AsyncTask<String, Void, Boolean> {
+
+    /*class DBTask extends AsyncTask<String, Void, Boolean> {
 
         private Connection connect;
         private Statement statement;
@@ -115,5 +121,5 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Connection status: " + result, Toast.LENGTH_LONG).show();
 
         }
-    }
+    }*/
 }

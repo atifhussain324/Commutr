@@ -5,17 +5,23 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
@@ -23,6 +29,7 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.firebase.geofire.LocationCallback;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
@@ -43,14 +50,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
+import com.roughike.swipeselector.SwipeItem;
+import com.roughike.swipeselector.SwipeSelector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,9 +97,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Location mLastLocation;
     private double mLatitudeText;
     private double mLongitudeText;
+    SwipeItem selectedItem;
 
     GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mLatitudeText, mLongitudeText), 1.0);
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -279,12 +290,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String uid = user.getUid();
-        System.out.println("USERID " + uid);
         Userid = uid;
+        Log.v("UserID", Userid);
 
+
+        startService(new Intent(this, MainActivity.class));
 
 
     }
+
 
     //Search Button Request
     private void sendRequest() {
@@ -338,38 +352,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(final LatLng latLng) {
-                //Log.v("lat_lng", latLng.latitude + "," + latLng.longitude);
-                Marker eventDrop = mMap.addMarker(new MarkerOptions()
-                        .position(latLng)
-                        .title("Select Event:")
-                        .snippet("Police Investigation")
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
-                        .draggable(false));
-                geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
 
 
-
-
-
-
-                /*AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
                 LayoutInflater inflater = getLayoutInflater();
                 View dialogLayout = inflater.inflate(R.layout.drop_dialog, null);
-                builder.setView(dialogLayout);
-                builder.create();
-*/
-                /*SwipeSelector swipeSelector = (SwipeSelector) findViewById(R.id.swipeSelector);
+
+
+                final SwipeSelector swipeSelector = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector);
+
                 swipeSelector.setItems(
 
-                        new SwipeItem(0, "Police Investigation", "Description for slide one."),
-                        new SwipeItem(1, "Sick Passenger", "Description for slide two."),
-                        new SwipeItem(2, "Train Traffic", "Description for slide three."),
+                        new SwipeItem(0, "Train Traffic", "Description for slide three."),
+                        new SwipeItem(1, "Police Investigation", "Description for slide one."),
+                        new SwipeItem(2, "Sick Passenger", "Description for slide two."),
                         new SwipeItem(3, "Signal Malfunction", "Description for slide four."),
                         new SwipeItem(4, "FastTrack", "Description for slide four.")
 
                 );
 
-                SwipeSelector swipeSelector2 = (SwipeSelector) findViewById(R.id.swipeSelector2);
+                SwipeSelector swipeSelector2 = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector2);
                 swipeSelector2.setItems(
                         new SwipeItem(0, "1 Train", "Broadway-7th Avenue Local"),
                         new SwipeItem(1, "2 Train", "Seventh Avenue Express"),
@@ -397,33 +399,64 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 );
 
-                SwipeSelector swipeSelector3 = (SwipeSelector) findViewById(R.id.swipeSelector3);
+                SwipeSelector swipeSelector3 = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector3);
                 swipeSelector3.setItems(
                         new SwipeItem(0, "Uptown", "Description for slide one."),
                         new SwipeItem(1, "Downtown", "Description for slide two.")
 
-                );*/
-                //builder.show();
-
-                /*  builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                );
+                builder.setView(dialogLayout);
+                builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Marker eventDrop = mMap.addMarker(new MarkerOptions()
-                                .position(latLng)
-                                .title("Select Event:")
-                                .snippet("Police Investigation")
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
-                                .draggable(false));
-                        geoFire.setLocation("Drop1", new GeoLocation(latLng.latitude, latLng.longitude));
+                        SwipeItem selectedItem = swipeSelector.getSelectedItem();
+                        int value = (Integer) selectedItem.value;
+                        if (value == 0) {
+                            Marker eventDrop = mMap.addMarker(new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.traffic))
+                                    .draggable(false));
+                            geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
+                        } else if (value == 1) {
+                            Marker eventDrop = mMap.addMarker(new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
+                                    .draggable(false));
+                            geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
+
+                        } else if (value == 2) {
+                            Marker eventDrop = mMap.addMarker(new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.sick))
+                                    .draggable(false));
+                            geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
+
+                        } else if (value == 3) {
+                            Marker eventDrop = mMap.addMarker(new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.signal))
+                                    .draggable(false));
+                            geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
+
+                        } else if (value == 4) {
+                            Marker eventDrop = mMap.addMarker(new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.fasttrack))
+                                    .draggable(false));
+                            geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
+
+                        }
+
                     }
                 });
-
                 builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        dialogInterface.dismiss();
                     }
-                });*/
+                });
+                builder.show();
+
 
                 geoFire.getLocation(Userid, new LocationCallback() {
                     @Override
@@ -447,42 +480,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         });
 
-        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
 
-            @Override
-            public void onKeyEntered(String key, GeoLocation location) {
-                //System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
-                Log.d("Tag1","Key %s entered the search area at [%f,%f]");
-            }
-
-            @Override
-            public void onKeyExited(String key) {
-                //System.out.println(String.format("Key %s is no longer in the search area", key));
-                Log.d("Tag2","Key %s is no longer in the search area");
-
-            }
-
-            @Override
-            public void onKeyMoved(String key, GeoLocation location) {
-                //System.out.println(String.format("Key %s moved within the search area to [%f,%f]", key, location.latitude, location.longitude));
-                Log.d("Tag3","Key %s moved within the search area to [%f,%f]");
-
-            }
-
-            @Override
-            public void onGeoQueryReady() {
-                //System.out.println("All initial data has been loaded and events have been fired!");
-                Log.d("Tag4","All initial data has been loaded and events have been fired!");
-
-            }
-
-            @Override
-            public void onGeoQueryError(DatabaseError error) {
-                //System.err.println("There was an error with this query: " + error);
-                Log.d("Tag5","There was an error with this query: ");
-
-            }
-        });
     }
 
     protected void onStart() {
