@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/gct"
+    android:background="#2A3D45"
     android:weightSum="1">
 
 
@@ -15,17 +15,17 @@
 
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="100dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="100dp"
-            android:background="@drawable/wsdesignlogobagtrans" />
+            android:background="@drawable/icon" />
 
     </LinearLayout>
 
     <LinearLayout
          android:layout_width="match_parent"
-         android:layout_height="140dp"></LinearLayout>
+         android:layout_height="100dp"></LinearLayout>
 
 
     <LinearLayout
@@ -129,7 +129,7 @@
 
     <Button
         android:id="@+id/btn_login"
-        android:layout_width="130dp"
+        android:layout_width="90dp"
         android:layout_height="wrap_content"
 
         android:text="Sign In"
@@ -139,12 +139,13 @@
         android:background="@drawable/border"
         android:layout_gravity="center"
         android:letterSpacing="0.025"
-        android:padding="10dp"
+        android:padding="1dp"
         android:layout_marginTop="60dp" />
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
 
     <ProgressBar
         android:layout_width="124dp"

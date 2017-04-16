@@ -9,7 +9,7 @@
         id="@+id/tab_nearby"
         icon="@drawable/ic_near_me_black_24dp"
         title="Nearby"
-        barColorWhenSelected="#D88373" />
+        barColorWhenSelected="#2A3D45" />
     <tab
         id="@+id/tab_planner"
         icon="@drawable/ic_map_black_24dp"
@@ -19,10 +19,10 @@
         id="@+id/tab_alerts"
         icon="@drawable/ic_notifications_active_black_24dp"
         title="Alerts"
-        barColorWhenSelected="#75485E" />
+        barColorWhenSelected="#2A3D45" />
     <tab
         id="@+id/tab_profile"
         icon="@drawable/ic_person_black_24dp"
         title="Profile"
-        barColorWhenSelected="#32021F" />
+        barColorWhenSelected="#2A3D45" />
 </tabs>
