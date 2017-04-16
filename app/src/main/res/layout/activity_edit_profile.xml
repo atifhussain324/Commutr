@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_marginTop="100dp"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginLeft="50dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/ic_friends" />
+
+                <EditText
+                    android:id="@+id/fName_editProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:hint="First Name"
+                    android:inputType="text"
+                    android:letterSpacing="0.025"
+                    android:padding="12dp"
+                    android:textColor="#000"
+                    android:textColorHint="#000"
+                    android:textSize="16dp" />
+
+
+            </LinearLayout>
+        </android.support.design.widget.TextInputLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:background="#000" />
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginLeft="50dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/ic_friends" />
+
+                <EditText
+                    android:id="@+id/lName_editProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:hint="LastName"
+                    android:inputType="text"
+                    android:letterSpacing="0.025"
+                    android:padding="12dp"
+                    android:textColor="#000"
+                    android:textColorHint="#000"
+                    android:textSize="16dp" />
+
+
+            </LinearLayout>
+        </android.support.design.widget.TextInputLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginBottom="20dp"
+            android:background="#000" />
+
+        <ImageView
+            android:id="@+id/imgView"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+
+
+             />
+        <LinearLayout
+            android:id="@+id/LinearLayout02"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="20dp"
+            android:layout_alignParentBottom="true">
+            <Button
+                android:id="@+id/btn_chooseImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_gravity="center"
+
+                android:layout_marginRight="35dp"
+                android:letterSpacing="0.025"
+                android:padding="10dp"
+                android:text="Select Image"
+                android:background="@drawable/rounded"
+
+                android:textAlignment="center"
+                android:textColor="@color/edit_profile"
+                android:textSize="16dp" />
+            <Button
+                android:id="@+id/btn_uploadImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_gravity="center"
+                android:background="@drawable/rounded"
+                android:letterSpacing="0.025"
+                android:padding="10dp"
+                android:text="upload Image"
+                android:textAlignment="center"
+
+                android:textColor="@color/edit_profile"
+                android:textSize="16dp" />
+        </LinearLayout>
+
+
+
+
+
+        <Button
+            android:id="@+id/btn_saveChanges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:textColor="@color/edit_profile"
+
+
+            android:layout_gravity="center"
+            android:layout_marginTop="60dp"
+            android:background="@drawable/rounded"
+            android:letterSpacing="0.025"
+            android:padding="10dp"
+            android:text="Save Changes"
+            android:textAlignment="center"
+            android:textSize="16dp" />
+
+
+
+
+
+
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <com.roughike.bottombar.BottomBar
+            android:id="@+id/bottomBarEditProfile"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_alignParentBottom="true"
+            app:bb_tabXmlResource="@xml/bottombar_tabs_five" />
+        />
+    </RelativeLayout>
+
+
+</LinearLayout>

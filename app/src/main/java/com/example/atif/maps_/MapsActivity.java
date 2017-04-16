@@ -15,6 +15,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -51,6 +53,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
+import com.roughike.swipeselector.SwipeItem;
+import com.roughike.swipeselector.SwipeSelector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -338,62 +342,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(final LatLng latLng) {
-                //Log.v("lat_lng", latLng.latitude + "," + latLng.longitude);
-                Marker eventDrop = mMap.addMarker(new MarkerOptions()
-                        .position(latLng)
-                        .title("Select Event:")
-                        .snippet("Police Investigation")
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
-                        .draggable(false));
-                geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
 
-
-
-
-
-
-                /*AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
                 LayoutInflater inflater = getLayoutInflater();
                 View dialogLayout = inflater.inflate(R.layout.drop_dialog, null);
                 builder.setView(dialogLayout);
                 builder.create();
-*/
-                /*SwipeSelector swipeSelector = (SwipeSelector) findViewById(R.id.swipeSelector);
+
+                SwipeSelector swipeSelector = (SwipeSelector) findViewById(R.id.swipeSelector);
                 swipeSelector.setItems(
 
-                        new SwipeItem(0, "Police Investigation", "Description for slide one."),
-                        new SwipeItem(1, "Sick Passenger", "Description for slide two."),
-                        new SwipeItem(2, "Train Traffic", "Description for slide three."),
-                        new SwipeItem(3, "Signal Malfunction", "Description for slide four."),
-                        new SwipeItem(4, "FastTrack", "Description for slide four.")
+                        new SwipeItem(0, "Option 1", "Description for slide one."),
+                        new SwipeItem(1, "Option 2", "Description for slide two."),
+                        new SwipeItem(2, "Option 3 ", "Description for slide three."),
+                        new SwipeItem(3, "Option 4", "Description for slide four."),
+                        new SwipeItem(4, "Option 5", "Description for slide fivee.")
 
                 );
 
                 SwipeSelector swipeSelector2 = (SwipeSelector) findViewById(R.id.swipeSelector2);
                 swipeSelector2.setItems(
-                        new SwipeItem(0, "1 Train", "Broadway-7th Avenue Local"),
-                        new SwipeItem(1, "2 Train", "Seventh Avenue Express"),
-                        new SwipeItem(2, "3 Train", "Seventh Avenue Express"),
-                        new SwipeItem(3, "4 Train", "Lexington Avenue Express"),
-                        new SwipeItem(4, "5 Train", "Lexington Avenue Express"),
-                        new SwipeItem(5, "6 Train", "Lexington Avenue Local/Pehlam Express"),
-                        new SwipeItem(6, "7 Train", "Flushing Local"),
-                        new SwipeItem(7, "A Train", "8th Avenue Express"),
-                        new SwipeItem(8, "B Train", "Central Park West Local/6th Avenue Express"),
-                        new SwipeItem(9, "C Train", "8th Avenue Local"),
-                        new SwipeItem(10, "D Train", "6th Avenue Express"),
-                        new SwipeItem(11, "E Train", "8th Avenue Local"),
-                        new SwipeItem(12, "F Train", "6th Avenue Local"),
-                        new SwipeItem(13, "G Train", "Brooklyn-Queens Crosstown Local"),
-                        new SwipeItem(14, "J Train", "Nassau Street Express"),
-                        new SwipeItem(15, "L Train", "14th Street-Canarsie Local"),
-                        new SwipeItem(16, "M Train", "Queens Blvd Local/6 Av Local/Myrtle Ave Local"),
-                        new SwipeItem(17, "N Train", "Broadway Express"),
-                        new SwipeItem(18, "Q Train", "Second Avenue/Broadway Express"),
-                        new SwipeItem(19, "R Train", "Queens Boulevard/Broadway/4th Avenue Local"),
-                        new SwipeItem(20, "W Train", "Broadway Local"),
-                        new SwipeItem(21, "Z Train", "Nassau Street Express"),
-                        new SwipeItem(22, "S Train", "42nd Street Shuttle")
+                        new SwipeItem(0, "Train", "Broadway-7th Avenue Local"),
+                        new SwipeItem(1, "Train", "Seventh Avenue Express"),
+                        new SwipeItem(2, "Train", "Seventh Avenue Express")
+
 
                 );
 
@@ -402,7 +374,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         new SwipeItem(0, "Uptown", "Description for slide one."),
                         new SwipeItem(1, "Downtown", "Description for slide two.")
 
-                );*/
+                );
+
+
+
                 //builder.show();
 
                 /*  builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
@@ -424,7 +399,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     }
                 });*/
-
+                //Log.v("lat_lng", latLng.latitude + "," + latLng.longitude);
+                Marker eventDrop = mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title("Select Event:")
+                        .snippet("Police Investigation")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
+                        .draggable(false));
+                geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
                 geoFire.getLocation(Userid, new LocationCallback() {
                     @Override
                     public void onLocationResult(String key, GeoLocation location) {
