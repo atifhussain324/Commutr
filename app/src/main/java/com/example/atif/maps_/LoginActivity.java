@@ -22,13 +22,22 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener,GoogleApiClient.OnConnectionFailedListener {
@@ -44,8 +53,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN=0;
     private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    String Userid;
+    private FirebaseUser loggedUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,7 +128,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         };
 
-
     }
     @Override
     public void onClick(View v) {
@@ -170,8 +180,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
 
+
+
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -184,10 +196,46 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
-                Intent intent = new Intent(LoginActivity.this, com.example.atif.maps_.MapsActivity.class);
-                startActivity(intent);
+
+                /*//Uploading the google image
+                loggedUser= FirebaseAuth.getInstance().getCurrentUser();
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageRef = storage.getReferenceFromUrl("gs://commutr-149323.appspot.com").child("Images").child(loggedUser.getUid());
+                UploadTask uploadTask = storageRef.putFile(account.getPhotoUrl());
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(LoginActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(LoginActivity.this, "Upload Failed -> " + e, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                //** End of uploading image */
 
 
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+                loggedUser= FirebaseAuth.getInstance().getCurrentUser();
+
+                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String uid = loggedUser.getUid();
+                        if(!dataSnapshot.child("users").hasChild(uid)){
+                            Intent intent = new Intent(LoginActivity.this, EditProfileActivity.class);
+                            startActivity(intent);
+                            finish();
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w("dbtest", "loadPost:onCancelled", databaseError.toException());
+                    }
+                });
 
 
 
@@ -236,9 +284,46 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                              Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
 
                         } else {
-                            Intent intent = new Intent(LoginActivity.this, com.example.atif.maps_.MapsActivity.class);
-                            startActivity(intent);
-                            finish();
+                            //UserInfo userInfo= new UserInfo();
+                            //userInfo.setFirstName("Rakhaa");
+                            //userInfo.setLastName("Bin Ahmed");
+
+                            mDatabase = FirebaseDatabase.getInstance().getReference();
+                            loggedUser= FirebaseAuth.getInstance().getCurrentUser();
+                            //mDatabase.child("users").child(loggedUser.getUid()).setValue(userInfo);
+
+                            //To read data
+
+                            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    String uid = loggedUser.getUid();
+                                    if (!dataSnapshot.child("users").hasChild(uid)) {
+                                        Intent intent = new Intent(LoginActivity.this, EditProfileActivity.class);
+                                        startActivity(intent);
+                                        finish();
+
+                                    } else {
+                                        UserInfo info = dataSnapshot.child("users").child(uid).getValue(UserInfo.class);
+                                        Log.v("onDataChange", "else");
+                                        Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.w("dbtest", "loadPost:onCancelled", databaseError.toException());
+                                }
+                            });
+
+
+
+
+                            // End of reading data
+
+
                         }
                     }
                 });

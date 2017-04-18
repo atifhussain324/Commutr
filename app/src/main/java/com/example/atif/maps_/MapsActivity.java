@@ -1,7 +1,6 @@
 package com.example.atif.maps_;
 
 import android.Manifest;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -105,6 +104,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ListView lv;
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth mAuthListener;
+    private DatabaseReference mDatabase;
+    private FirebaseUser loggedUser;
     private String Userid;
     private double mLatitudeText;
     private double mLongitudeText;
@@ -123,7 +124,6 @@ TextView displayName;
     double testLng = Double.parseDouble(latlong[1]);
     LatLng testlocation = new LatLng(testLat, testLng);
     CircleOptions circleOptions;
-    private PendingIntent geoFencePendingIntent;
     private final int GEOFENCE_REQ_CODE = 0;
 
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -316,37 +316,15 @@ TextView displayName;
                     .build();
         }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String uid = user.getUid();
-        Userid = uid;
-        Log.v("UserID", Userid);
-
-
-        Geofence geofence = new Geofence.Builder()
-                .setRequestId(GEOFENCE_REQ_ID) // Geofence ID
-                .setCircularRegion(40.836405, -73.859922, 100) // defining fence region
-                .setExpirationDuration(8000) // expiring date
-
-                // Transition types that it should look for
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
-                .build();
-        Log.v("fence", "created");
-        GeofencingRequest request = new GeofencingRequest.Builder()
-                // Notification to trigger when the Geofence is created
-                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-                .addGeofence(geofence) // add a Geofence
-                .build();
-
-        circleOptions = new CircleOptions()
-                .center(testlocation)
-                .strokeColor(Color.argb(50, 70, 70, 70))
-                .fillColor(Color.argb(100, 150, 150, 150))
-                .radius(100);
 
 
 
 
-        //  geoFenceLimits = mMap.addCircle( circleOptions );
+
+
+
+
+
 
 
 
@@ -367,7 +345,6 @@ TextView displayName;
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setOnPoiClickListener(this);
         mMap.getUiSettings().setMapToolbarEnabled(false);
-        mMap.addCircle(circleOptions);
 
         //Location Permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -441,6 +418,12 @@ TextView displayName;
                 builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        loggedUser= FirebaseAuth.getInstance().getCurrentUser();
+
+                        mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(loggedUser.getUid()).child("markerLocations");
+
+
+
                         SwipeItem selectedItem = swipeSelector.getSelectedItem();
                         int value = (Integer) selectedItem.value;
                         if (value == 0) {
@@ -449,39 +432,48 @@ TextView displayName;
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.traffic))
                                     .draggable(false));
                             eventName = "Train Traffic";
-                            geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
+                            //geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
+                            mDatabase.child("lat").setValue(latLng.latitude);
+                            mDatabase.child("lng").setValue(latLng.longitude);
+
+
+
                         } else if (value == 1) {
                             Marker eventDrop = mMap.addMarker(new MarkerOptions()
                                     .position(latLng)
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
                                     .draggable(false));
                             eventName = "Police Investigation";
-                            geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
-
+                            //geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
+                            mDatabase.child("lat").setValue(latLng.latitude);
+                            mDatabase.child("lng").setValue(latLng.longitude);
                         } else if (value == 2) {
                             Marker eventDrop = mMap.addMarker(new MarkerOptions()
                                     .position(latLng)
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.sick))
                                     .draggable(false));
                             eventName = "Sick Passenger";
-                            geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
-
+                           // geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
+                            mDatabase.child("lat").setValue(latLng.latitude);
+                            mDatabase.child("lng").setValue(latLng.longitude);
                         } else if (value == 3) {
                             Marker eventDrop = mMap.addMarker(new MarkerOptions()
                                     .position(latLng)
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.signal))
                                     .draggable(false));
                             eventName = "Signal Malfunction";
-                            geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
-
+                            //geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
+                            mDatabase.child("lat").setValue(latLng.latitude);
+                            mDatabase.child("lng").setValue(latLng.longitude);
                         } else if (value == 4) {
                             Marker eventDrop = mMap.addMarker(new MarkerOptions()
                                     .position(latLng)
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.fasttrack))
                                     .draggable(false));
                             eventName = "FastTrack";
-                            geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
-
+                            //geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
+                            mDatabase.child("lat").setValue(latLng.latitude);
+                            mDatabase.child("lng").setValue(latLng.longitude);
                         }
 
                     }
@@ -495,23 +487,7 @@ TextView displayName;
                 builder.show();
 
 
-                geoFire.getLocation(Userid, new LocationCallback() {
-                    @Override
-                    public void onLocationResult(String key, GeoLocation location) {
-                        if (location != null) {
-                            System.out.println(String.format("The location for key %s is [%f,%f]", key, location.latitude, location.longitude));
-                        } else {
-                            System.out.println(String.format("There is no location for key %s in GeoFire", key));
-                        }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        System.err.println("There was an error getting the GeoFire location: " + databaseError);
-                    }
-
-
-                });
             }
 
 
