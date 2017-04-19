@@ -1,21 +1,15 @@
 package com.example.atif.maps_;
 
-import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -79,26 +73,28 @@ public class EditProfileActivity extends AppCompatActivity {
 
 
         //Reading the userInfo object from db
-        ValueEventListener postListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // Get Post object and use the values to update the UI
-                String uid = loggedUser.getUid();
-                info = dataSnapshot.child("users").child(uid).getValue(UserInfo.class);
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
 
-                if(info!=null) {
-                    fName.setText(info.getFirstName());
-                    lName.setText(info.getLastName());
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // Get Post object and use the values to update the UI
+                    String uid = loggedUser.getUid();
+                    info = dataSnapshot.child("users").child(uid).getValue(UserInfo.class);
+
+                    if(info!=null) {
+                        fName.setText(info.getFirstName());
+                        lName.setText(info.getLastName());
+                    }
+
                 }
 
-            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.w("dbtest", "loadPost:onCancelled", databaseError.toException());
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w("dbtest", "loadPost:onCancelled", databaseError.toException());
-            }
-        };
-        mDatabase.addValueEventListener(postListener);
+
+        });
         //** Done reading
 
         chooseImg.setOnClickListener(new View.OnClickListener() {
@@ -148,24 +144,12 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String uid = loggedUser.getUid();
 
-                if(info==null) { //for new user
-                    UserInfo newInfo= new UserInfo();
-                        newInfo.setFirstName(fName.getText().toString());
-                        newInfo.setLastName(lName.getText().toString());
-                        mDatabase.child("users").child(uid).setValue(newInfo);
+                        mDatabase.child("users").child(uid).child("firstName").setValue(fName.getText().toString());
+                        mDatabase.child("users").child(uid).child("lastName").setValue(lName.getText().toString());
 
-                    }
-                    else if(info!=null) { //changes for existing user
-                    info.setFirstName(fName.getText().toString());
-                    info.setLastName(lName.getText().toString());
-                    mDatabase.child("users").child(uid).setValue(info);
-                }
                 Toast.makeText(EditProfileActivity.this, "Profile Updated Successfully", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(EditProfileActivity.this, MapsActivity.class);
                 startActivity(intent);
-
-
-
             }
         });
         //Bottom Navigation Bar

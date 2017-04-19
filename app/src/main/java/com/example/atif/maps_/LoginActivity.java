@@ -197,25 +197,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
 
-                /*//Uploading the google image
-                loggedUser= FirebaseAuth.getInstance().getCurrentUser();
-                FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference storageRef = storage.getReferenceFromUrl("gs://commutr-149323.appspot.com").child("Images").child(loggedUser.getUid());
-                UploadTask uploadTask = storageRef.putFile(account.getPhotoUrl());
-                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(LoginActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(LoginActivity.this, "Upload Failed -> " + e, Toast.LENGTH_SHORT).show();
-                    }
-                });
-                //** End of uploading image */
-
-
                 mDatabase = FirebaseDatabase.getInstance().getReference();
                 loggedUser= FirebaseAuth.getInstance().getCurrentUser();
 
@@ -226,9 +207,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if(!dataSnapshot.child("users").hasChild(uid)){
                             Intent intent = new Intent(LoginActivity.this, EditProfileActivity.class);
                             startActivity(intent);
-                            finish();
+
 
                         }
+                        else{
+                            Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                            startActivity(intent);
+                        }
+
                     }
 
                     @Override
@@ -304,8 +290,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         finish();
 
                                     } else {
-                                        UserInfo info = dataSnapshot.child("users").child(uid).getValue(UserInfo.class);
-                                        Log.v("onDataChange", "else");
                                         Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                                         startActivity(intent);
                                         finish();
