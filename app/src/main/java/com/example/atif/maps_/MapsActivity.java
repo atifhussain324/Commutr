@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,6 +51,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -67,15 +69,21 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 import com.roughike.swipeselector.SwipeItem;
 import com.roughike.swipeselector.SwipeSelector;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 
 import Modules.DirectionFinder;
@@ -111,7 +119,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double mLongitudeText;
     GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mLatitudeText, mLongitudeText), 1.0);
     private Effectstype effect;
-TextView displayName;
+    TextView displayName;
     TextView repScore;
     String eventName;
 
@@ -316,22 +324,6 @@ TextView displayName;
                     .build();
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 
@@ -359,7 +351,71 @@ TextView displayName;
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json));
 
 
-        //Dropping Marker
+        //test
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
+
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot snapshot) {
+
+                Iterator<DataSnapshot> iterator = snapshot.getChildren().iterator();
+                while (iterator.hasNext()) {
+                    snapshot = iterator.next();
+
+                    BitmapDescriptor icon;
+                    String userID = snapshot.getKey();
+                    Log.v("snapshotUID", userID);
+
+                    if (snapshot.hasChild("marker")) {
+                        Log.v("snapshotLat", "rakhaa");
+                        String lat = snapshot.child("marker").child("latlng").child("latitude").getValue().toString();
+                        String lng = snapshot.child("marker").child("latlng").child("longitude").getValue().toString();
+                        LatLng latlng = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+                        Log.v("snapshotLat", latlng.toString());
+                        String eventName = snapshot.child("marker").child("name").getValue().toString();
+                        Log.v("snapshotName", eventName);
+                        switch (eventName) {
+
+                            case "Police Investigation":
+                                icon = BitmapDescriptorFactory.fromResource(R.drawable.police);
+                                break;
+                            case "Sick Passenger":
+                                icon = BitmapDescriptorFactory.fromResource(R.drawable.sick);
+                                break;
+                            case "Signal Malfunction":
+                                icon = BitmapDescriptorFactory.fromResource(R.drawable.signal);
+                                break;
+                            case "FastTrack":
+                                icon = BitmapDescriptorFactory.fromResource(R.drawable.fasttrack);
+                                break;
+                            default:
+                                icon = BitmapDescriptorFactory.fromResource(R.drawable.traffic);
+                                break;
+
+                        }
+
+                        mMap.addMarker(new MarkerOptions()
+                                .position(latlng)
+                                .icon(icon)
+                                .draggable(false));
+
+
+                        //Log.v("locatio",latLng);
+                    }
+
+                }//Iterator ends here
+
+
+            }
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //Log.w("dbtest", "loadPost:onCancelled", databaseError.toException());
+            }
+        });
+
+
+        //Dropping Own Marker
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(final LatLng latLng) {
@@ -418,62 +474,75 @@ TextView displayName;
                 builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        loggedUser= FirebaseAuth.getInstance().getCurrentUser();
+                        loggedUser = FirebaseAuth.getInstance().getCurrentUser();
 
-                        mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(loggedUser.getUid()).child("markerLocations");
-
-
+                        mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(loggedUser.getUid());
+                        Calendar cal = GregorianCalendar.getInstance();
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+                        cal.add(GregorianCalendar.MINUTE, 10);
 
                         SwipeItem selectedItem = swipeSelector.getSelectedItem();
                         int value = (Integer) selectedItem.value;
                         if (value == 0) {
                             Marker eventDrop = mMap.addMarker(new MarkerOptions()
                                     .position(latLng)
+                                    .title(loggedUser.getUid())
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.traffic))
                                     .draggable(false));
                             eventName = "Train Traffic";
                             //geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
-                            mDatabase.child("lat").setValue(latLng.latitude);
-                            mDatabase.child("lng").setValue(latLng.longitude);
+                            mDatabase.child("marker").child("latlng").setValue(latLng);
 
-
+                            mDatabase.child("marker").child("name").setValue(eventName);
+                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
 
                         } else if (value == 1) {
                             Marker eventDrop = mMap.addMarker(new MarkerOptions()
                                     .position(latLng)
+                                    .title(loggedUser.getUid())
+
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
                                     .draggable(false));
                             eventName = "Police Investigation";
-                            //geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
-                            mDatabase.child("lat").setValue(latLng.latitude);
-                            mDatabase.child("lng").setValue(latLng.longitude);
+                            mDatabase.child("marker").child("latlng").setValue(latLng);
+
+                            mDatabase.child("marker").child("name").setValue(eventName);
+                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+
+
                         } else if (value == 2) {
                             Marker eventDrop = mMap.addMarker(new MarkerOptions()
                                     .position(latLng)
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.sick))
                                     .draggable(false));
                             eventName = "Sick Passenger";
-                           // geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
-                            mDatabase.child("lat").setValue(latLng.latitude);
-                            mDatabase.child("lng").setValue(latLng.longitude);
+                            mDatabase.child("marker").child("latlng").setValue(latLng);
+
+                            mDatabase.child("marker").child("name").setValue(eventName);
+                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+
                         } else if (value == 3) {
                             Marker eventDrop = mMap.addMarker(new MarkerOptions()
                                     .position(latLng)
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.signal))
                                     .draggable(false));
                             eventName = "Signal Malfunction";
-                            //geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
-                            mDatabase.child("lat").setValue(latLng.latitude);
-                            mDatabase.child("lng").setValue(latLng.longitude);
+                            mDatabase.child("marker").child("latlng").setValue(latLng);
+
+                            mDatabase.child("marker").child("name").setValue(eventName);
+                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+
                         } else if (value == 4) {
                             Marker eventDrop = mMap.addMarker(new MarkerOptions()
                                     .position(latLng)
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.fasttrack))
                                     .draggable(false));
                             eventName = "FastTrack";
-                            //geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
-                            mDatabase.child("lat").setValue(latLng.latitude);
-                            mDatabase.child("lng").setValue(latLng.longitude);
+                            mDatabase.child("marker").child("latlng").setValue(latLng);
+
+                            mDatabase.child("marker").child("name").setValue(eventName);
+                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+
                         }
 
                     }
@@ -487,7 +556,6 @@ TextView displayName;
                 builder.show();
 
 
-
             }
 
 
@@ -495,67 +563,48 @@ TextView displayName;
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 
+            String firstName;
+
             @Override
-            public boolean onMarkerClick(Marker arg0) {
-
-
-                /*AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-                LayoutInflater inflater = MapsActivity.this.getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.bottomdialog_layout, null);
-
-
-                ImageButton upvoteButton = (ImageButton) findViewById(R.id.upvote);
-                ImageButton downvoteButton = (ImageButton) findViewById(R.id.downvote);
-
-                displayName = (TextView) dialogView.findViewById(R.id.user);
-                repScore = (TextView) dialogView.findViewById(R.id.score);
-
-                Bundle extras = getIntent().getExtras();
-                String NAME = extras.getString("userName");
-                displayName.setText("By:" + NAME);
-
-                builder.setTitle(eventName)
-                        .setIcon(R.drawable.icon)
-                        .setMessage("test")
-                        .setCancelable(true);
-
-                dialog = builder.create();
-
-
-
-
-
-
-                dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-
-                        builder.setView(dialogView);
-                        dialog = builder.show();
-
-getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
-
-                return true;*/
+            public boolean onMarkerClick(final Marker arg0) {
 
 
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View customView = inflater.inflate(R.layout.bottomdialog_layout, null);
+
                 ImageButton upvoteButton = (ImageButton) customView.findViewById(R.id.upvote);
                 ImageButton downvoteButton = (ImageButton) customView.findViewById(R.id.downvote);
-                //TextView textView = (TextView) customView.findViewById(R.id.);
-                //String comment = textView.getText().toString();
-                
-                displayName = (TextView) findViewById(R.id.user);
-                repScore = (TextView) findViewById(R.id.score);
+
+                displayName = (TextView) customView.findViewById(R.id.user);
+                repScore = (TextView) customView.findViewById(R.id.score);
+
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    public void onDataChange(DataSnapshot snapshot) {
+                        String fName= snapshot.child("users").child(arg0.getTitle()).child("firstName").getValue().toString();
+                        String lName= snapshot.child("users").child(arg0.getTitle()).child("lastName").getValue().toString();
+
+                        if (fName != null) {
+                            displayName.setText("By: " + fName + " " + lName);
+
+
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //Log.w("dbtest", "loadPost:onCancelled", databaseError.toException());
+                    }
+                });
 
                 BottomDialog bottomDialog = new BottomDialog.Builder(MapsActivity.this)
 
-                        .setIcon(R.drawable.icon)
+                        .setIcon(R.drawable.t1)
                         .setTitle(eventName)
                         .setCustomView(customView)
                         .setContent("comment")
 
 
-            .build();
-
+                        .build();
 
 
                 bottomDialog.show();
@@ -565,7 +614,6 @@ getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams
 
         });
     }
-
 
 
     //Search Button Request

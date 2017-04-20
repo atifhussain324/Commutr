@@ -203,17 +203,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        String uid = loggedUser.getUid();
-                        if(!dataSnapshot.child("users").hasChild(uid)){
-                            Intent intent = new Intent(LoginActivity.this, EditProfileActivity.class);
-                            startActivity(intent);
 
-
-                        }
-                        else{
                             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                             startActivity(intent);
-                        }
+                            finish();
+
 
                     }
 
