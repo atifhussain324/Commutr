@@ -396,6 +396,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         mMap.addMarker(new MarkerOptions()
                                 .position(latlng)
                                 .icon(icon)
+                                .title(userID)
                                 .draggable(false));
 
 
