@@ -105,14 +105,6 @@ public class trainSchedule extends AppCompatActivity {
         ga.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
-
-        //access different activity in ImageButton
-       // Alerts();
-        //Maps();
-        //offMap();
-        //Schedule();
-       // Settings();
-
     }
     private class getTrainInfo extends AsyncTask<Void, Void, Void>{
 

@@ -19,29 +19,14 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.geofire.GeoFire;
-import com.firebase.geofire.GeoLocation;
-import com.firebase.geofire.GeoQuery;
-import com.firebase.geofire.LocationCallback;
-import com.firebase.geofire.util.Constants;
 import com.github.javiersantos.bottomdialogs.BottomDialog;
-import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofencingEvent;
-import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
@@ -53,8 +38,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -64,16 +47,13 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 import com.roughike.swipeselector.SwipeItem;
@@ -97,45 +77,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int MY_PERMISSION_FINE_LOCATION = 101;
     ArrayList<RouteOption> temp;
     ArrayList<MapsActivity> mSelectedItems;
-    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
-    GeoFire geoFire = new GeoFire(ref);
-    Location mLastLocation;
+    private Location mLastLocation;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
-    private String locationName;
     private String mOrigin, mDestination;
     private ProgressDialog progressDialog;
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
     private PlaceAutocompleteFragment mOriginAutocompleteFragment, mDestinationAutocompleteFragment;
-    private ListView lv;
-    private FirebaseAuth.AuthStateListener authListener;
-    private FirebaseAuth mAuthListener;
     private DatabaseReference mDatabase;
     private FirebaseUser loggedUser;
-    private String Userid;
     private double mLatitudeText;
     private double mLongitudeText;
-    GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mLatitudeText, mLongitudeText), 1.0);
-    private Effectstype effect;
-    TextView displayName;
-    TextView repScore;
-    String eventName;
-
-    AlertDialog dialog;
-    private static final String GEOFENCE_REQ_ID = "My Geofence";
-    private Circle geoFenceLimits;
-
-    String[] latlong = "40.836405, -73.859922".split(",");
-    double testLat = Double.parseDouble(latlong[0]);
-    double testLng = Double.parseDouble(latlong[1]);
-    LatLng testlocation = new LatLng(testLat, testLng);
-    CircleOptions circleOptions;
-    private final int GEOFENCE_REQ_CODE = 0;
-
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    UserInfo profile;
+    private TextView displayName;
+    private TextView repScore;
+    private String eventName;
+    private Drawable icon;
+    private String dropName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,46 +132,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Top Bar
         BottomBar bottomBar2 = (BottomBar) findViewById(R.id.bottomBar2);
+        final BottomBarTab directionBadge = bottomBar2.getTabWithId(R.id.tab_directions);
         bottomBar2.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
-                if (tabId == R.id.tab_search) {
-                    sendRequest();
-                } else if (tabId == R.id.tab_directions) {
-                    temp = RouteLister.routeList;
-                    Intent i = new Intent(MapsActivity.this, routeActivity.class);
-                    i.putExtra("FILES_TO_SEND", temp);
-                    startActivity(i);
-                } /*else if (tabId == R.id.tab_preference_menu) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this, R.style.AppCompatAlertDialogStyle);
-                    mSelectedItems = new ArrayList();
+                switch (tabId){
+                    case R.id.tab_search:
+                        sendRequest();
+                        directionBadge.setBadgeCount(1);
 
-                    builder.setTitle("Route Preferences");
-                    builder.setMultiChoiceItems(R.array.perferences, null, new DialogInterface.OnMultiChoiceClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int which, boolean isSelected) {
-                            if (isSelected) {
-                                System.out.println("test");
-                            } else if (mSelectedItems.contains(which)) {
-                                mSelectedItems.remove(Integer.valueOf(which));
-                            }
-                        }
-                    });
-                    builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                    break;
+                    case R.id.tab_directions:
+                        temp = RouteLister.routeList;
+                        Intent i = new Intent(MapsActivity.this, routeActivity.class);
+                        i.putExtra("FILES_TO_SEND", temp);
+                        Log.v("routetest","test");
+                        startActivity(i);
+                        break;
+                    case R.id.tab_preference_menu:
 
-                        }
-                    });
+                }
 
-                    builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
 
-                        }
-                    });
-                    builder.show();
-                }*/
 
             }
 
@@ -222,7 +163,57 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         bottomBar2.setOnTabReselectListener(new OnTabReselectListener() {
             @Override
             public void onTabReSelected(@IdRes int tabId) {
-                if (tabId == R.id.tab_search) {
+                switch (tabId){
+                    case R.id.tab_search:
+                        if (mOrigin.isEmpty()) {
+                            Toast.makeText(MapsActivity.this, "Please enter origin address!", Toast.LENGTH_SHORT).show();
+
+                        } else if (mDestination.isEmpty()) {
+                            Toast.makeText(MapsActivity.this, "Please enter destination address!", Toast.LENGTH_SHORT).show();
+
+                        } else if (mOrigin.isEmpty() && mDestination.isEmpty()) {
+                            Toast.makeText(MapsActivity.this, "Please enter a starting and destination address", Toast.LENGTH_SHORT).show();
+                        } else sendRequest();
+                        break;
+                    case R.id.tab_directions:
+                        temp = RouteLister.routeList;
+                        Intent i = new Intent(MapsActivity.this, routeActivity.class);
+                        i.putExtra("FILES_TO_SEND", temp);
+                        Log.v("routetest","test");
+                        startActivity(i);
+                        break;
+                    case R.id.tab_preference_menu:
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this, R.style.AppCompatAlertDialogStyle);
+                        mSelectedItems = new ArrayList();
+
+                        builder.setTitle("Route Preferences");
+                        builder.setMultiChoiceItems(R.array.perferences, null, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int which, boolean isSelected) {
+                                if (isSelected) {
+                                    System.out.println("test");
+                                } else if (mSelectedItems.contains(which)) {
+                                    mSelectedItems.remove(Integer.valueOf(which));
+                                }
+                            }
+                        });
+                        builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+
+                        builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+                        builder.show();
+                        break;
+                }
+                /*if (tabId == R.id.tab_search) {
                     if (mOrigin.isEmpty()) {
                         Toast.makeText(MapsActivity.this, "Please enter origin address!", Toast.LENGTH_SHORT).show();
 
@@ -237,6 +228,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     temp = RouteLister.routeList;
                     Intent i = new Intent(MapsActivity.this, routeActivity.class);
                     i.putExtra("FILES_TO_SEND", temp);
+                    Log.v("routetestReselected","test");
+
                     startActivity(i);
                 }
                 if (tabId == R.id.tab_preference_menu) {
@@ -268,7 +261,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     });
                     builder.show();
-                }
+                }*/
             }
         });
 
@@ -277,11 +270,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         //Google Start Search Bar
-        mOriginAutocompleteFragment = (PlaceAutocompleteFragment)
-
-                getFragmentManager().
-
-                        findFragmentById(R.id.place_autocomplete_origin);
+        mOriginAutocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_origin);
         mOriginAutocompleteFragment.setHint("Start");
         mOriginAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -297,11 +286,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         //Google Destination Search Bar
-        mDestinationAutocompleteFragment = (PlaceAutocompleteFragment)
-
-                getFragmentManager().
-
-                        findFragmentById(R.id.place_autocomplete_destination);
+        mDestinationAutocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_destination);
         mDestinationAutocompleteFragment.setHint("Destination");
         mDestinationAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -353,7 +338,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //test
         mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(DataSnapshot snapshot) {
 
@@ -400,7 +384,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 .draggable(false));
 
 
-                        //Log.v("locatio",latLng);
                     }
 
                 }//Iterator ends here
@@ -426,18 +409,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 final SwipeSelector swipeSelector = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector);
-
                 swipeSelector.setItems(
 
-                        new SwipeItem(0, "Train Traffic", "Description for slide three."),
-                        new SwipeItem(1, "Police Investigation", "Description for slide one."),
-                        new SwipeItem(2, "Sick Passenger", "Description for slide two."),
-                        new SwipeItem(3, "Signal Malfunction", "Description for slide four."),
-                        new SwipeItem(4, "FastTrack", "Description for slide four.")
+                        new SwipeItem(0, "Train Traffic", "Delay due to train traffic ahead"),
+                        new SwipeItem(1, "Police Investigation", "Police presence at station"),
+                        new SwipeItem(2, "Sick Passenger", "Delay due to medical attention needed for passenger"),
+                        new SwipeItem(3, "Signal Malfunction", "Delay due to signal issues at station"),
+                        new SwipeItem(4, "FastTrack", "Planned MTA construction")
 
                 );
 
-                SwipeSelector swipeSelector2 = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector2);
+                final SwipeSelector swipeSelector2 = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector2);
                 swipeSelector2.setItems(
                         new SwipeItem(0, "1 Train", "Broadway-7th Avenue Local"),
                         new SwipeItem(1, "2 Train", "Seventh Avenue Express"),
@@ -467,108 +449,113 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 SwipeSelector swipeSelector3 = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector3);
                 swipeSelector3.setItems(
-                        new SwipeItem(0, "Uptown", "Description for slide one."),
-                        new SwipeItem(1, "Downtown", "Description for slide two.")
+                        new SwipeItem(0, "Uptown", "Train headed Uptown"),
+                        new SwipeItem(1, "Downtown", "Train headed Downtown")
 
                 );
+
+
                 builder.setView(dialogLayout);
                 builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         loggedUser = FirebaseAuth.getInstance().getCurrentUser();
-
                         mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(loggedUser.getUid());
                         Calendar cal = GregorianCalendar.getInstance();
                         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
                         cal.add(GregorianCalendar.MINUTE, 10);
 
+                        SwipeItem selectedItem2 = swipeSelector2.getSelectedItem();
+                        int iconValue = (Integer) selectedItem2.value;
+
                         SwipeItem selectedItem = swipeSelector.getSelectedItem();
                         int value = (Integer) selectedItem.value;
-                        if (value == 0) {
-                            Marker eventDrop = mMap.addMarker(new MarkerOptions()
-                                    .position(latLng)
-                                    .title(loggedUser.getUid())
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.traffic))
-                                    .draggable(false));
-                            eventName = "Train Traffic";
-                            //geoFire.setLocation(Userid, new GeoLocation(latLng.latitude, latLng.longitude));
-                            mDatabase.child("marker").child("latlng").setValue(latLng);
 
-                            mDatabase.child("marker").child("name").setValue(eventName);
-                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                        switch (value) {
+                            case 0:
+                                Marker eventDrop = mMap.addMarker(new MarkerOptions()
+                                        .position(latLng)
+                                        .title(loggedUser.getUid())
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.traffic))
+                                        .draggable(false));
+                                eventName = "Train Traffic";
+                                mDatabase.child("marker").child("latlng").setValue(latLng);
+                                mDatabase.child("marker").child("name").setValue(eventName);
+                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                                mDatabase.child("marker").child("icon").setValue(iconValue);
 
-                        } else if (value == 1) {
-                            Marker eventDrop = mMap.addMarker(new MarkerOptions()
-                                    .position(latLng)
-                                    .title(loggedUser.getUid())
+                                break;
+                            case 1:
+                                Marker eventDrop1 = mMap.addMarker(new MarkerOptions()
+                                        .position(latLng)
+                                        .title(loggedUser.getUid())
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
+                                        .draggable(false));
+                                eventName = "Police Investigation";
+                                mDatabase.child("marker").child("latlng").setValue(latLng);
+                                mDatabase.child("marker").child("name").setValue(eventName);
+                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                                mDatabase.child("marker").child("icon").setValue(iconValue);
 
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
-                                    .draggable(false));
-                            eventName = "Police Investigation";
-                            mDatabase.child("marker").child("latlng").setValue(latLng);
+                                break;
+                            case 2:
+                                Marker eventDrop2 = mMap.addMarker(new MarkerOptions()
+                                        .position(latLng)
+                                        .title(loggedUser.getUid())
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.sick))
+                                        .draggable(false));
+                                eventName = "Sick Passenger";
+                                mDatabase.child("marker").child("latlng").setValue(latLng);
+                                mDatabase.child("marker").child("name").setValue(eventName);
+                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                                mDatabase.child("marker").child("icon").setValue(iconValue);
 
-                            mDatabase.child("marker").child("name").setValue(eventName);
-                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                                break;
+                            case 3:
+                                Marker eventDrop3 = mMap.addMarker(new MarkerOptions()
+                                        .position(latLng)
+                                        .title(loggedUser.getUid())
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.signal))
+                                        .draggable(false));
+                                eventName = "Signal Malfunction";
+                                mDatabase.child("marker").child("latlng").setValue(latLng);
+                                mDatabase.child("marker").child("name").setValue(eventName);
+                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                                mDatabase.child("marker").child("icon").setValue(iconValue);
 
+                                break;
+                            default:
+                                Marker eventDrop4 = mMap.addMarker(new MarkerOptions()
+                                        .position(latLng)
+                                        .title(loggedUser.getUid())
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.fasttrack))
+                                        .draggable(false));
+                                eventName = "FastTrack";
+                                mDatabase.child("marker").child("latlng").setValue(latLng);
+                                mDatabase.child("marker").child("name").setValue(eventName);
+                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                                mDatabase.child("marker").child("icon").setValue(iconValue);
 
-                        } else if (value == 2) {
-                            Marker eventDrop = mMap.addMarker(new MarkerOptions()
-                                    .position(latLng)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.sick))
-                                    .draggable(false));
-                            eventName = "Sick Passenger";
-                            mDatabase.child("marker").child("latlng").setValue(latLng);
-
-                            mDatabase.child("marker").child("name").setValue(eventName);
-                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
-
-                        } else if (value == 3) {
-                            Marker eventDrop = mMap.addMarker(new MarkerOptions()
-                                    .position(latLng)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.signal))
-                                    .draggable(false));
-                            eventName = "Signal Malfunction";
-                            mDatabase.child("marker").child("latlng").setValue(latLng);
-
-                            mDatabase.child("marker").child("name").setValue(eventName);
-                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
-
-                        } else if (value == 4) {
-                            Marker eventDrop = mMap.addMarker(new MarkerOptions()
-                                    .position(latLng)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.fasttrack))
-                                    .draggable(false));
-                            eventName = "FastTrack";
-                            mDatabase.child("marker").child("latlng").setValue(latLng);
-
-                            mDatabase.child("marker").child("name").setValue(eventName);
-                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                                break;
 
                         }
-
+                        //mDatabase.child("marker").
                     }
                 });
-                builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
                     }
                 });
                 builder.show();
-
-
             }
-
-
         });
 
+
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-
-            String firstName;
-
             @Override
             public boolean onMarkerClick(final Marker arg0) {
-
 
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View customView = inflater.inflate(R.layout.bottomdialog_layout, null);
@@ -578,19 +565,92 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 displayName = (TextView) customView.findViewById(R.id.user);
                 repScore = (TextView) customView.findViewById(R.id.score);
-
                 mDatabase = FirebaseDatabase.getInstance().getReference();
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     public void onDataChange(DataSnapshot snapshot) {
-                        String fName= snapshot.child("users").child(arg0.getTitle()).child("firstName").getValue().toString();
-                        String lName= snapshot.child("users").child(arg0.getTitle()).child("lastName").getValue().toString();
+                        String fName = snapshot.child("users").child(arg0.getTitle()).child("firstName").getValue().toString();
+                        String lName = snapshot.child("users").child(arg0.getTitle()).child("lastName").getValue().toString();
+                        String iconIndex = snapshot.child("users").child(arg0.getTitle()).child("marker").child("icon").getValue().toString();
+                        dropName = snapshot.child("users").child(arg0.getTitle()).child("marker").child("name").getValue().toString();
+                        switch (iconIndex) {
+                            default:
+                                icon = getResources().getDrawable(R.drawable.t1);
+                                break;
+                            case "1":
+                                icon = getResources().getDrawable(R.drawable.t2);
+                                break;
+                            case "2":
+                                icon = getResources().getDrawable(R.drawable.t3);
+                                break;
+                            case "3":
+                                icon = getResources().getDrawable(R.drawable.t4);
+                                break;
+                            case "4":
+                                icon = getResources().getDrawable(R.drawable.t5);
+                                break;
+                            case "5":
+                                icon = getResources().getDrawable(R.drawable.t6);
+                                break;
+                            case "6":
+                                icon = getResources().getDrawable(R.drawable.t7);
+                                break;
+                            case "7":
+                                icon = getResources().getDrawable(R.drawable.ta);
+                                break;
+                            case "8":
+                                icon = getResources().getDrawable(R.drawable.tb);
+                                break;
+                            case "9":
+                                icon = getResources().getDrawable(R.drawable.tc);
+                                break;
+                            case "10":
+                                icon = getResources().getDrawable(R.drawable.td);
+                                break;
+                            case "11":
+                                icon = getResources().getDrawable(R.drawable.te);
+                                break;
+                            case "12":
+                                icon = getResources().getDrawable(R.drawable.tf);
+                                break;
+                            case "13":
+                                icon = getResources().getDrawable(R.drawable.tg);
+                                break;
+                            case "14":
+                                icon = getResources().getDrawable(R.drawable.tj);
+                                break;
+                            case "15":
+                                icon = getResources().getDrawable(R.drawable.tl);
+                                break;
+                            case "16":
+                                icon = getResources().getDrawable(R.drawable.tm);
+                                break;
+                            case "17":
+                                icon = getResources().getDrawable(R.drawable.tn);
+                                break;
+                            case "18":
+                                icon = getResources().getDrawable(R.drawable.tq);
+                                break;
+                            case "19":
+                                icon = getResources().getDrawable(R.drawable.tr);
+                                break;
+                            case "20":
+                                icon = getResources().getDrawable(R.drawable.tr);
+                                break;
+                            case "21":
+                                icon = getResources().getDrawable(R.drawable.tz);
+                                break;
+                            case "22":
+                                icon = getResources().getDrawable(R.drawable.ts);
+                                break;
+                        }
 
                         if (fName != null) {
                             displayName.setText("By: " + fName + " " + lName);
 
-
                         }
+
                     }
+
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                         //Log.w("dbtest", "loadPost:onCancelled", databaseError.toException());
@@ -599,21 +659,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 BottomDialog bottomDialog = new BottomDialog.Builder(MapsActivity.this)
 
-                        .setIcon(R.drawable.t1)
-                        .setTitle(eventName)
+                        .setIcon(icon)
+                        .setTitle(dropName)
                         .setCustomView(customView)
                         .setContent("comment")
-
-
                         .build();
-
-
                 bottomDialog.show();
                 return true;
             }
 
 
         });
+
+
     }
 
 

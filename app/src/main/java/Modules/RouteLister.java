@@ -34,7 +34,6 @@ public class RouteLister {
     private String destination;
     public static ArrayList<RouteOption> routeList=  new ArrayList<>();
     private MapsActivity mActivity;
-    RouteOption routeOption;
 
 
     public RouteLister(MapsActivity activity, String origin, String destination) {
@@ -50,7 +49,7 @@ public class RouteLister {
     private String createUrl() throws UnsupportedEncodingException {
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
         String urlDestination = URLEncoder.encode(destination, "utf-8");
-        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&mode=transit&transit_mode=subway&tempkey=" + GOOGLE_API_KEY;
+        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&mode=transit&transit_mode=subway&key=" + GOOGLE_API_KEY;
     }
 
     private class DownloadRawData extends AsyncTask<String, Void, String> {
@@ -93,18 +92,13 @@ public class RouteLister {
         if (data == null)
             return;
 
-        //routeList = new ArrayList<>();
         JSONObject jsonData = new JSONObject(data);
         JSONArray jsonRoutes = jsonData.getJSONArray("routes");
         Log.i("testing","before for loop");
         Log.i("testing", jsonRoutes.length() + " - Routes");
-        //for (int i = 0; i < jsonRoutes.length(); i++) {
-            //Log.i("testing", "in loop - " + i);
+
             try {
                 JSONObject jsonRoute = jsonRoutes.getJSONObject(0);
-                //Route route = new Route();
-
-
                 JSONArray jsonLegs = jsonRoute.getJSONArray("legs");
                 JSONObject jsonLeg = jsonLegs.getJSONObject(0);
                 if (jsonLegs.getJSONObject(0) != null) {
@@ -113,16 +107,6 @@ public class RouteLister {
                 } else {
                     Log.i("testing", "No data found");
                 }
-                /*
-                String totalDuration = jsonLeg.getJSONObject("duration").getString("text");
-                Log.i("testing", totalDuration);
-
-                String departureTime = jsonLeg.getJSONObject("departure_time").getString("text");
-                Log.i("testing", departureTime);
-
-                String arrivalTime = jsonLeg.getJSONObject("arrival_time").getString("text");
-                Log.i("testing", arrivalTime);
-                */
                 JSONArray stepsArray=jsonLeg.getJSONArray("steps");
                 for (int i=0;i<stepsArray.length();i++) {
                     RouteOption routeOption= new RouteOption();
@@ -169,66 +153,11 @@ public class RouteLister {
 
                 }
                 Log.i("testingFinal2", Integer.toString(routeList.size()));
-                // I want to get the steps Array one sec I will go pee
-
-                //String name2 = jsonLeg.getJSONArray("steps").getJSONObject(0).getJSONObject("transit_details").getJSONObject("departure_stop").getString("name");
-
-
-                //FOR TRANSIT, STEP 1 is used and Transit Mode = TRANSIT
-
-                // 1 - Name, 2 - trainShortname + trainLongName, 3 - html_instructions, 4- stops and stepdur
-
-                //FOR WALKING, STEP O is used and Transit Mode = WALKING
-
-                //1 - Name , 2 - Instruction , 3 - Duration and Distance
-
-
-
-
-                //Log.i("testing3", name+instruction+stops+stepDur);
-
-
-
-                /*
-                routeOption.setName(name);
-                routeOption.setInstruction(instruction);
-                routeOption.setStops(stops);
-                routeOption.setStepDuration(stepDur);
-                */
-                //System.out.println(location);
-
-
-
 
             }catch(Exception e){
                 Log.e("testing", e.getMessage());
             }
 
-
-
-        //}
-        //Log.i("testing for list",routeList.get(0).getInstruction());
-
-          //final LinearLayoutManager layoutManager= new LinearLayoutManager(mActivity.getApplicationContext());
-        //layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        //mActivity.recyclerView.setLayoutManager(layoutManager);
-        //Intent i= new Intent(mActivity,routeActivity.class);
-       // Intent i = new Intent();
-        //i.putExtra("FILES_TO_SEND",routeList);
-        //mActivity.startActivity(i);
-
-        //Recycler_Route_Adapter adapter = new Recycler_Route_Adapter(routeList,mActivity.getApplication());
-        //mActivity.recyclerView.setAdapter(adapter);
-
-
-
-        /*
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(layoutManager);
-        */
-
-        //listener.onDirectionFinderSuccess(routes);
         Log.i("test","outside");
         }
     public ArrayList<RouteOption> getlist(){

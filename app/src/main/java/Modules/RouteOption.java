@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by rahman on 12/13/16.
  */
 
-public class RouteOption implements Serializable{
+public class RouteOption implements Serializable {
     private String totalDuration;
     private String departureTime;
     private String arrivalTime;
@@ -23,109 +23,131 @@ public class RouteOption implements Serializable{
     //Walking Fields
     private String wName;
     private String wInstruction;
-    private  String wDuration;
+    private String wDuration;
     private String wDistance;
 
     private String travel_mode;
 
-    public void setTotalDuration(String duration){
+    public void setTotalDuration(String duration) {
         totalDuration = duration;
     }
-    public void setDepartureTime(String departure_Time){
+
+    public void setDepartureTime(String departure_Time) {
         departureTime = departure_Time;
     }
-    public void setArrivalTime(String arrival_Time){
+
+    public void setArrivalTime(String arrival_Time) {
         arrivalTime = arrival_Time;
     }
-    public void settName(String name){
-        tName= name;
-    }
-    public void settInstruction(String instruc){
-        tInstruction= instruc;
-    }
-    public void settStops(int nStops){
-        tStops= nStops;
-    }
-    public void settStepDuration(String stDuration){
-        tStepDuration= stDuration;
-    }
-    public void settShortName(String sName){
-        tShortName=sName;
-    }
-    public void settLongName(String lName){
-        tLongName= lName;
-    }
-    public void setColor(String bColor){
-        color= bColor;
+
+    public void settName(String name) {
+        tName = name;
     }
 
-    public void setwName(String name){
-        wName= name;
+    public void settInstruction(String instruc) {
+        tInstruction = instruc;
     }
-    public void  setwInstruction(String instruction){
+
+    public void settStops(int nStops) {
+        tStops = nStops;
+    }
+
+    public void settStepDuration(String stDuration) {
+        tStepDuration = stDuration;
+    }
+
+    public void settShortName(String sName) {
+        tShortName = sName;
+    }
+
+    public void settLongName(String lName) {
+        tLongName = lName;
+    }
+
+    public void setColor(String bColor) {
+        color = bColor;
+    }
+
+    public void setwName(String name) {
+        wName = name;
+    }
+
+    public void setwInstruction(String instruction) {
         wInstruction = instruction;
     }
-    public void setwDuration(String duration){
+
+    public void setwDuration(String duration) {
         wDuration = duration;
     }
-    public  void setwDistance(String distance){
-        wDistance= distance;
-    }
-    public void setTravel_mode(String tmode){
-        travel_mode= tmode;
+
+    public void setwDistance(String distance) {
+        wDistance = distance;
     }
 
+    public void setTravel_mode(String tmode) {
+        travel_mode = tmode;
+    }
 
 
-
-
-    public String getTotalDuration(){
+    public String getTotalDuration() {
         return totalDuration;
     }
-    public String getDepartureTime(){
+
+    public String getDepartureTime() {
         return departureTime;
     }
-    public String getArrivalTime(){
+
+    public String getArrivalTime() {
         return arrivalTime;
     }
 
-    public String getwName(){
+    public String getwName() {
         return wName;
     }
-    public String getwInstruction(){
+
+    public String getwInstruction() {
         return wInstruction;
     }
-    public String getwDuration(){
+
+    public String getwDuration() {
         return wDuration;
     }
-    public String getwDistance(){
+
+    public String getwDistance() {
         return wDistance;
     }
 
 
-    public String getInstruction(){
+    public String getInstruction() {
         return tInstruction;
     }
-    public String getName(){
+
+    public String getName() {
         return tName;
     }
-    public String getStepDuration(){
+
+    public String getStepDuration() {
         return tStepDuration;
     }
-    public int getStops(){
+
+    public int getStops() {
         return tStops;
     }
-    public String gettShortName(){
+
+    public String gettShortName() {
         return tShortName;
     }
-    public String gettLongName(){
+
+    public String gettLongName() {
         return tLongName;
 
     }
-    public String getTravel_mode(){
+
+    public String getTravel_mode() {
         return travel_mode;
     }
-    public String getColor(){
+
+    public String getColor() {
         return color;
     }
 
