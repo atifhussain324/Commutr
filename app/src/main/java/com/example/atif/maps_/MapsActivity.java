@@ -59,9 +59,11 @@ import com.roughike.bottombar.OnTabSelectListener;
 import com.roughike.swipeselector.SwipeItem;
 import com.roughike.swipeselector.SwipeSelector;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
@@ -71,6 +73,8 @@ import Modules.DirectionFinderListener;
 import Modules.Route;
 import Modules.RouteLister;
 import Modules.RouteOption;
+
+import static com.example.atif.maps_.R.string.Cancel;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener, LocationListener, GoogleApiClient.ConnectionCallbacks {
 
@@ -95,6 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String eventName;
     private Drawable icon;
     private String dropName;
+    private View customView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,23 +141,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         bottomBar2.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
-                switch (tabId){
+                switch (tabId) {
                     case R.id.tab_search:
                         sendRequest();
                         directionBadge.setBadgeCount(1);
 
-                    break;
+                        break;
                     case R.id.tab_directions:
                         temp = RouteLister.routeList;
                         Intent i = new Intent(MapsActivity.this, routeActivity.class);
                         i.putExtra("FILES_TO_SEND", temp);
-                        Log.v("routetest","test");
+                        Log.v("routetest", "test");
                         startActivity(i);
                         break;
-                    case R.id.tab_preference_menu:
-
                 }
-
 
 
             }
@@ -163,7 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         bottomBar2.setOnTabReselectListener(new OnTabReselectListener() {
             @Override
             public void onTabReSelected(@IdRes int tabId) {
-                switch (tabId){
+                switch (tabId) {
                     case R.id.tab_search:
                         if (mOrigin.isEmpty()) {
                             Toast.makeText(MapsActivity.this, "Please enter origin address!", Toast.LENGTH_SHORT).show();
@@ -179,89 +181,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         temp = RouteLister.routeList;
                         Intent i = new Intent(MapsActivity.this, routeActivity.class);
                         i.putExtra("FILES_TO_SEND", temp);
-                        Log.v("routetest","test");
+                        Log.v("routetest", "test");
                         startActivity(i);
                         break;
                     case R.id.tab_preference_menu:
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this, R.style.AppCompatAlertDialogStyle);
-                        mSelectedItems = new ArrayList();
 
-                        builder.setTitle("Route Preferences");
-                        builder.setMultiChoiceItems(R.array.perferences, null, new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int which, boolean isSelected) {
-                                if (isSelected) {
-                                    System.out.println("test");
-                                } else if (mSelectedItems.contains(which)) {
-                                    mSelectedItems.remove(Integer.valueOf(which));
-                                }
-                            }
-                        });
-                        builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        });
-
-                        builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        });
-                        builder.show();
                         break;
                 }
-                /*if (tabId == R.id.tab_search) {
-                    if (mOrigin.isEmpty()) {
-                        Toast.makeText(MapsActivity.this, "Please enter origin address!", Toast.LENGTH_SHORT).show();
 
-                    } else if (mDestination.isEmpty()) {
-                        Toast.makeText(MapsActivity.this, "Please enter destination address!", Toast.LENGTH_SHORT).show();
-
-                    } else if (mOrigin.isEmpty() && mDestination.isEmpty()) {
-                        Toast.makeText(MapsActivity.this, "Please enter a starting and destination address", Toast.LENGTH_SHORT).show();
-                    } else sendRequest();
-                }
-                if (tabId == R.id.tab_directions) {
-                    temp = RouteLister.routeList;
-                    Intent i = new Intent(MapsActivity.this, routeActivity.class);
-                    i.putExtra("FILES_TO_SEND", temp);
-                    Log.v("routetestReselected","test");
-
-                    startActivity(i);
-                }
-                if (tabId == R.id.tab_preference_menu) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this, R.style.AppCompatAlertDialogStyle);
-                    mSelectedItems = new ArrayList();
-
-                    builder.setTitle("Route Preferences");
-                    builder.setMultiChoiceItems(R.array.perferences, null, new DialogInterface.OnMultiChoiceClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int which, boolean isSelected) {
-                            if (isSelected) {
-                                System.out.println("test");
-                            } else if (mSelectedItems.contains(which)) {
-                                mSelectedItems.remove(Integer.valueOf(which));
-                            }
-                        }
-                    });
-                    builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-
-                        }
-                    });
-
-                    builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-
-                        }
-                    });
-                    builder.show();
-                }*/
             }
         });
 
@@ -270,7 +197,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         //Google Start Search Bar
-        mOriginAutocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_origin);
+        mOriginAutocompleteFragment = (PlaceAutocompleteFragment)
+
+                getFragmentManager().
+
+                        findFragmentById(R.id.place_autocomplete_origin);
         mOriginAutocompleteFragment.setHint("Start");
         mOriginAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -300,8 +231,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        if (mGoogleApiClient == null)
 
-        if (mGoogleApiClient == null) {
+        {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
@@ -341,6 +273,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(DataSnapshot snapshot) {
 
+
                 Iterator<DataSnapshot> iterator = snapshot.getChildren().iterator();
                 while (iterator.hasNext()) {
                     snapshot = iterator.next();
@@ -357,6 +290,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Log.v("snapshotLat", latlng.toString());
                         String eventName = snapshot.child("marker").child("name").getValue().toString();
                         Log.v("snapshotName", eventName);
+                        String expirationTime = snapshot.child("marker").child("expiration").getValue().toString();
+
+
                         switch (eventName) {
 
                             case "Police Investigation":
@@ -377,11 +313,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         }
 
-                        mMap.addMarker(new MarkerOptions()
-                                .position(latlng)
-                                .icon(icon)
-                                .title(userID)
-                                .draggable(false));
+                        try {
+                            SimpleDateFormat parser = new SimpleDateFormat(("MM/dd/yyyy HH:mm"));
+                            Date expTime = parser.parse(expirationTime);
+                            Calendar currentT = GregorianCalendar.getInstance();
+                            Date cTime = currentT.getTime();
+                            Log.v("expTime", expTime.toString());
+                            Log.v("cTime", cTime.toString());
+                            if (expTime.after(cTime)) {
+
+                                Log.v("TimeTest", "If executed");
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(latlng)
+                                        .icon(icon)
+                                        .title(userID)
+                                        .draggable(false));
+                            } else {
+                                Log.v("TimeTest", "Else executed");
+                                snapshot.child("marker").getRef().removeValue();
+
+
+                            }
+                        } catch (ParseException e) {
+                            Log.v("TimeTest", "parse exception caught");
+                        }
 
 
                     }
@@ -461,9 +416,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onClick(DialogInterface dialogInterface, int i) {
                         loggedUser = FirebaseAuth.getInstance().getCurrentUser();
                         mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(loggedUser.getUid());
-                        Calendar cal = GregorianCalendar.getInstance();
-                        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-                        cal.add(GregorianCalendar.MINUTE, 10);
+                        Calendar expirationTime = GregorianCalendar.getInstance();
+                        Calendar postedTime = GregorianCalendar.getInstance();
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+                        SimpleDateFormat timeFormat12 = new SimpleDateFormat("h:mm a");
+                        expirationTime.add(GregorianCalendar.MINUTE, 10);
 
                         SwipeItem selectedItem2 = swipeSelector2.getSelectedItem();
                         int iconValue = (Integer) selectedItem2.value;
@@ -481,8 +438,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 eventName = "Train Traffic";
                                 mDatabase.child("marker").child("latlng").setValue(latLng);
                                 mDatabase.child("marker").child("name").setValue(eventName);
-                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
                                 mDatabase.child("marker").child("icon").setValue(iconValue);
+                                mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
+                                mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
 
                                 break;
                             case 1:
@@ -494,8 +453,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 eventName = "Police Investigation";
                                 mDatabase.child("marker").child("latlng").setValue(latLng);
                                 mDatabase.child("marker").child("name").setValue(eventName);
-                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
                                 mDatabase.child("marker").child("icon").setValue(iconValue);
+                                mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
+                                mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
 
                                 break;
                             case 2:
@@ -507,8 +468,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 eventName = "Sick Passenger";
                                 mDatabase.child("marker").child("latlng").setValue(latLng);
                                 mDatabase.child("marker").child("name").setValue(eventName);
-                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
                                 mDatabase.child("marker").child("icon").setValue(iconValue);
+                                mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
 
                                 break;
                             case 3:
@@ -520,8 +482,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 eventName = "Signal Malfunction";
                                 mDatabase.child("marker").child("latlng").setValue(latLng);
                                 mDatabase.child("marker").child("name").setValue(eventName);
-                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
                                 mDatabase.child("marker").child("icon").setValue(iconValue);
+                                mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
+                                mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
 
                                 break;
                             default:
@@ -533,8 +497,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 eventName = "FastTrack";
                                 mDatabase.child("marker").child("latlng").setValue(latLng);
                                 mDatabase.child("marker").child("name").setValue(eventName);
-                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(cal.getTime()));
+                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
                                 mDatabase.child("marker").child("icon").setValue(iconValue);
+                                mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
+                                mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
 
                                 break;
 
@@ -558,11 +524,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public boolean onMarkerClick(final Marker arg0) {
 
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View customView = inflater.inflate(R.layout.bottomdialog_layout, null);
+                customView = inflater.inflate(R.layout.bottomdialog_layout, null);
 
                 ImageButton upvoteButton = (ImageButton) customView.findViewById(R.id.upvote);
                 ImageButton downvoteButton = (ImageButton) customView.findViewById(R.id.downvote);
 
+                upvoteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
+
+                downvoteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
                 displayName = (TextView) customView.findViewById(R.id.user);
                 repScore = (TextView) customView.findViewById(R.id.score);
                 mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -572,6 +551,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         String lName = snapshot.child("users").child(arg0.getTitle()).child("lastName").getValue().toString();
                         String iconIndex = snapshot.child("users").child(arg0.getTitle()).child("marker").child("icon").getValue().toString();
                         dropName = snapshot.child("users").child(arg0.getTitle()).child("marker").child("name").getValue().toString();
+                        String postedTime = snapshot.child("users").child(arg0.getTitle()).child("marker").child("postedTime12").getValue().toString();
+
+                       /* try {
+                            SimpleDateFormat timeFormat12 = new SimpleDateFormat("h:mma");
+                            Date pTime= timeFormat12.parse(postedTime);
+                            postedTime = timeFormat12.format(pTime);
+                        }
+                        catch (ParseException e){
+
+                        }*/
                         switch (iconIndex) {
                             default:
                                 icon = getResources().getDrawable(R.drawable.t1);
@@ -644,9 +633,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 break;
                         }
 
+
                         if (fName != null) {
                             displayName.setText("By: " + fName + " " + lName);
+                            repScore.setText(postedTime);
+                            BottomDialog bottomDialog = new BottomDialog.Builder(MapsActivity.this)
 
+                                    .setIcon(icon)
+                                    .setTitle(dropName)
+                                    .setCustomView(customView)
+                                    .setContent("comment")
+                                    .build();
+                            bottomDialog.show();
                         }
 
                     }
@@ -657,14 +655,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
 
-                BottomDialog bottomDialog = new BottomDialog.Builder(MapsActivity.this)
 
-                        .setIcon(icon)
-                        .setTitle(dropName)
-                        .setCustomView(customView)
-                        .setContent("comment")
-                        .build();
-                bottomDialog.show();
                 return true;
             }
 

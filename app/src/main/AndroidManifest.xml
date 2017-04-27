@@ -17,7 +17,8 @@
         android:label="Commutr"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="android:label">
+        tools:replace="android:label"
+        >
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
