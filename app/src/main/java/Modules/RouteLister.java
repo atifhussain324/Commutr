@@ -2,6 +2,7 @@ package Modules;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 
@@ -23,6 +24,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import Modules.RouteOption;
+
 /**
  * Created by Atif on 12/9/16.
  */
@@ -34,7 +37,7 @@ public class RouteLister {
     private String destination;
     public static ArrayList<RouteOption> routeList=  new ArrayList<>();
     private MapsActivity mActivity;
-
+    String preference;
 
     public RouteLister(MapsActivity activity, String origin, String destination) {
         this.mActivity = activity;
@@ -45,12 +48,25 @@ public class RouteLister {
     public void execute() throws UnsupportedEncodingException {
         new DownloadRawData().execute(createUrl());
     }
+    //test
+    public Intent getIntent() {
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+          preference= extras.getString("preference");
+            Log.v("preference",preference);
+        }
+        return null;
+    }
+    //end test
 
     private String createUrl() throws UnsupportedEncodingException {
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
         String urlDestination = URLEncoder.encode(destination, "utf-8");
+
         return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&mode=transit&transit_mode=subway&key=" + GOOGLE_API_KEY;
     }
+
+
 
     private class DownloadRawData extends AsyncTask<String, Void, String> {
 

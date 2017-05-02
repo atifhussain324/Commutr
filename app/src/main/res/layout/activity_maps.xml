@@ -70,7 +70,7 @@
             app:bb_activeTabAlpha="0.6"
             app:bb_inActiveTabAlpha="0.6"
             />
-        />
+
     </RelativeLayout>
 
 

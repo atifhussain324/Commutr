@@ -11,8 +11,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:background="@color/cardview_light_background">
+        android:background="@color/cardview_light_background"
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/imageView"
@@ -20,7 +20,17 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginRight="16dp" />
+            android:layout_marginRight="16dp"
+            android:layout_alignLeft="@+id/i"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/cardview_light_background"
+        android:padding="16dp"
+        android:id="@+id/info">
 
         <TextView
             android:id="@+id/title1"
@@ -29,7 +39,7 @@
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/imageView"
             android:text="Title"
-            android:textSize="30sp" />
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/title2"
@@ -38,6 +48,7 @@
             android:layout_below="@+id/title1"
             android:layout_toRightOf="@+id/imageView"
             android:text="Description" />
+
         <TextView
             android:id="@+id/title3"
             android:layout_width="wrap_content"
@@ -45,6 +56,7 @@
             android:layout_below="@+id/title2"
             android:layout_toRightOf="@+id/imageView"
             android:text="" />
+
         <TextView
             android:id="@+id/title4"
             android:layout_width="wrap_content"

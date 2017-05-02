@@ -23,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -74,8 +75,6 @@ import Modules.Route;
 import Modules.RouteLister;
 import Modules.RouteOption;
 
-import static com.example.atif.maps_.R.string.Cancel;
-
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener, LocationListener, GoogleApiClient.ConnectionCallbacks {
 
     private static final int MY_PERMISSION_FINE_LOCATION = 101;
@@ -96,6 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double mLongitudeText;
     private TextView displayName;
     private TextView repScore;
+    private TextView postTime;
     private String eventName;
     private Drawable icon;
     private String dropName;
@@ -185,7 +185,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         startActivity(i);
                         break;
                     case R.id.tab_preference_menu:
+                        new MaterialDialog.Builder(MapsActivity.this)
+                                .title("Route Preferences")
+                                .items(R.array.perferences)
+                                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
+                                    @Override
+                                    public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                        Intent i = new Intent(getApplicationContext(), RouteLister.class);
+                                        String preference;
+                                        if (which == 0) {
+                                            Log.v("Dialog", "Best Route");
+                                            preference = "";
+                                            i.putExtra("preference", preference);
+                                            startActivity(i);
 
+                                        }
+                                        if (which == 1) {
+                                            Log.v("Dialog", "Less walking");
+                                            preference = "transit_routing_preference=less_walking";
+                                            i.putExtra("preference", preference);
+                                            startActivity(i);
+                                        }
+                                        if (which == 2) {
+                                            Log.v("Dialog", "Fewer transfer");
+                                            preference = "transit_routing_preference=fewer_transfers";
+                                            i.putExtra("preference", preference);
+                                            startActivity(i);
+
+                                        }
+                                        return true;
+                                    }
+                                })
+                                .negativeText(R.string.Cancel)
+                                .positiveText(R.string.OK)
+                                .show();
                         break;
                 }
 
@@ -249,8 +282,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         LatLng new_york = new LatLng(40.758879, -73.985110);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new_york, 12));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(new_york));
-
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setOnPoiClickListener(this);
         mMap.getUiSettings().setMapToolbarEnabled(false);
@@ -268,7 +299,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json));
 
 
-        //test
+        //Reading Database and Displaying Existing Markers
         mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(DataSnapshot snapshot) {
@@ -354,171 +385,212 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-        //Dropping Own Marker
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.hasChild("marker")) {
+                    Log.v("Marker1", "If");
+                    Toast.makeText(MapsActivity.this, "This is my Toast message!",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    Log.v("Marker1", "Else");
+                }
+
+            }
+
             @Override
-            public void onMapLongClick(final LatLng latLng) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-                LayoutInflater inflater = getLayoutInflater();
-                View dialogLayout = inflater.inflate(R.layout.drop_dialog, null);
+            public void onCancelled(DatabaseError databaseError) {
 
-
-                final SwipeSelector swipeSelector = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector);
-                swipeSelector.setItems(
-
-                        new SwipeItem(0, "Train Traffic", "Delay due to train traffic ahead"),
-                        new SwipeItem(1, "Police Investigation", "Police presence at station"),
-                        new SwipeItem(2, "Sick Passenger", "Delay due to medical attention needed for passenger"),
-                        new SwipeItem(3, "Signal Malfunction", "Delay due to signal issues at station"),
-                        new SwipeItem(4, "FastTrack", "Planned MTA construction")
-
-                );
-
-                final SwipeSelector swipeSelector2 = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector2);
-                swipeSelector2.setItems(
-                        new SwipeItem(0, "1 Train", "Broadway-7th Avenue Local"),
-                        new SwipeItem(1, "2 Train", "Seventh Avenue Express"),
-                        new SwipeItem(2, "3 Train", "Seventh Avenue Express"),
-                        new SwipeItem(3, "4 Train", "Lexington Avenue Express"),
-                        new SwipeItem(4, "5 Train", "Lexington Avenue Express"),
-                        new SwipeItem(5, "6 Train", "Lexington Avenue Local/Pehlam Express"),
-                        new SwipeItem(6, "7 Train", "Flushing Local"),
-                        new SwipeItem(7, "A Train", "8th Avenue Express"),
-                        new SwipeItem(8, "B Train", "Central Park West Local/6th Avenue Express"),
-                        new SwipeItem(9, "C Train", "8th Avenue Local"),
-                        new SwipeItem(10, "D Train", "6th Avenue Express"),
-                        new SwipeItem(11, "E Train", "8th Avenue Local"),
-                        new SwipeItem(12, "F Train", "6th Avenue Local"),
-                        new SwipeItem(13, "G Train", "Brooklyn-Queens Crosstown Local"),
-                        new SwipeItem(14, "J Train", "Nassau Street Express"),
-                        new SwipeItem(15, "L Train", "14th Street-Canarsie Local"),
-                        new SwipeItem(16, "M Train", "Queens Blvd Local/6 Av Local/Myrtle Ave Local"),
-                        new SwipeItem(17, "N Train", "Broadway Express"),
-                        new SwipeItem(18, "Q Train", "Second Avenue/Broadway Express"),
-                        new SwipeItem(19, "R Train", "Queens Boulevard/Broadway/4th Avenue Local"),
-                        new SwipeItem(20, "W Train", "Broadway Local"),
-                        new SwipeItem(21, "Z Train", "Nassau Street Express"),
-                        new SwipeItem(22, "S Train", "42nd Street Shuttle")
-
-                );
-
-                SwipeSelector swipeSelector3 = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector3);
-                swipeSelector3.setItems(
-                        new SwipeItem(0, "Uptown", "Train headed Uptown"),
-                        new SwipeItem(1, "Downtown", "Train headed Downtown")
-
-                );
-
-
-                builder.setView(dialogLayout);
-                builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        loggedUser = FirebaseAuth.getInstance().getCurrentUser();
-                        mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(loggedUser.getUid());
-                        Calendar expirationTime = GregorianCalendar.getInstance();
-                        Calendar postedTime = GregorianCalendar.getInstance();
-                        SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-                        SimpleDateFormat timeFormat12 = new SimpleDateFormat("h:mm a");
-                        expirationTime.add(GregorianCalendar.MINUTE, 10);
-
-                        SwipeItem selectedItem2 = swipeSelector2.getSelectedItem();
-                        int iconValue = (Integer) selectedItem2.value;
-
-                        SwipeItem selectedItem = swipeSelector.getSelectedItem();
-                        int value = (Integer) selectedItem.value;
-
-                        switch (value) {
-                            case 0:
-                                Marker eventDrop = mMap.addMarker(new MarkerOptions()
-                                        .position(latLng)
-                                        .title(loggedUser.getUid())
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.traffic))
-                                        .draggable(false));
-                                eventName = "Train Traffic";
-                                mDatabase.child("marker").child("latlng").setValue(latLng);
-                                mDatabase.child("marker").child("name").setValue(eventName);
-                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
-                                mDatabase.child("marker").child("icon").setValue(iconValue);
-                                mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
-                                mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
-
-                                break;
-                            case 1:
-                                Marker eventDrop1 = mMap.addMarker(new MarkerOptions()
-                                        .position(latLng)
-                                        .title(loggedUser.getUid())
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
-                                        .draggable(false));
-                                eventName = "Police Investigation";
-                                mDatabase.child("marker").child("latlng").setValue(latLng);
-                                mDatabase.child("marker").child("name").setValue(eventName);
-                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
-                                mDatabase.child("marker").child("icon").setValue(iconValue);
-                                mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
-                                mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
-
-                                break;
-                            case 2:
-                                Marker eventDrop2 = mMap.addMarker(new MarkerOptions()
-                                        .position(latLng)
-                                        .title(loggedUser.getUid())
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.sick))
-                                        .draggable(false));
-                                eventName = "Sick Passenger";
-                                mDatabase.child("marker").child("latlng").setValue(latLng);
-                                mDatabase.child("marker").child("name").setValue(eventName);
-                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
-                                mDatabase.child("marker").child("icon").setValue(iconValue);
-                                mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
-
-                                break;
-                            case 3:
-                                Marker eventDrop3 = mMap.addMarker(new MarkerOptions()
-                                        .position(latLng)
-                                        .title(loggedUser.getUid())
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.signal))
-                                        .draggable(false));
-                                eventName = "Signal Malfunction";
-                                mDatabase.child("marker").child("latlng").setValue(latLng);
-                                mDatabase.child("marker").child("name").setValue(eventName);
-                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
-                                mDatabase.child("marker").child("icon").setValue(iconValue);
-                                mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
-                                mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
-
-                                break;
-                            default:
-                                Marker eventDrop4 = mMap.addMarker(new MarkerOptions()
-                                        .position(latLng)
-                                        .title(loggedUser.getUid())
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.fasttrack))
-                                        .draggable(false));
-                                eventName = "FastTrack";
-                                mDatabase.child("marker").child("latlng").setValue(latLng);
-                                mDatabase.child("marker").child("name").setValue(eventName);
-                                mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
-                                mDatabase.child("marker").child("icon").setValue(iconValue);
-                                mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
-                                mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
-
-                                break;
-
-                        }
-                        //mDatabase.child("marker").
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                builder.show();
             }
         });
 
 
+        //Dropping Own Marker
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(final LatLng latLng) {
+                mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
+                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    public void onDataChange(DataSnapshot snapshot) {
+                        // Reads if Marker exists for user in database
+                        if (snapshot.hasChild("marker")) {
+                            Log.v("Marker1", "If");
+                            Toast.makeText(MapsActivity.this, "You have dropped an alert too recently!",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        // Allows for marker drop if one does not exist
+                        else {
+                            Log.v("Marker1", "Else");
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+                            LayoutInflater inflater = getLayoutInflater();
+                            View dialogLayout = inflater.inflate(R.layout.drop_dialog, null);
+
+                            final SwipeSelector swipeSelector = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector);
+                            swipeSelector.setItems(
+
+                                    new SwipeItem(0, "Train Traffic", "Delay due to train traffic ahead"),
+                                    new SwipeItem(1, "Police Investigation", "Police presence at station"),
+                                    new SwipeItem(2, "Sick Passenger", "Delay due to medical attention needed for passenger"),
+                                    new SwipeItem(3, "Signal Malfunction", "Delay due to signal issues at station"),
+                                    new SwipeItem(4, "FastTrack", "Planned MTA construction")
+
+                            );
+
+                            final SwipeSelector swipeSelector2 = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector2);
+                            swipeSelector2.setItems(
+                                    new SwipeItem(0, "1 Train", "Broadway-7th Avenue Local"),
+                                    new SwipeItem(1, "2 Train", "Seventh Avenue Express"),
+                                    new SwipeItem(2, "3 Train", "Seventh Avenue Express"),
+                                    new SwipeItem(3, "4 Train", "Lexington Avenue Express"),
+                                    new SwipeItem(4, "5 Train", "Lexington Avenue Express"),
+                                    new SwipeItem(5, "6 Train", "Lexington Avenue Local/Pehlam Express"),
+                                    new SwipeItem(6, "7 Train", "Flushing Local"),
+                                    new SwipeItem(7, "A Train", "8th Avenue Express"),
+                                    new SwipeItem(8, "B Train", "Central Park West Local/6th Avenue Express"),
+                                    new SwipeItem(9, "C Train", "8th Avenue Local"),
+                                    new SwipeItem(10, "D Train", "6th Avenue Express"),
+                                    new SwipeItem(11, "E Train", "8th Avenue Local"),
+                                    new SwipeItem(12, "F Train", "6th Avenue Local"),
+                                    new SwipeItem(13, "G Train", "Brooklyn-Queens Crosstown Local"),
+                                    new SwipeItem(14, "J Train", "Nassau Street Express"),
+                                    new SwipeItem(15, "L Train", "14th Street-Canarsie Local"),
+                                    new SwipeItem(16, "M Train", "Queens Blvd Local/6 Av Local/Myrtle Ave Local"),
+                                    new SwipeItem(17, "N Train", "Broadway Express"),
+                                    new SwipeItem(18, "Q Train", "Second Avenue/Broadway Express"),
+                                    new SwipeItem(19, "R Train", "Queens Boulevard/Broadway/4th Avenue Local"),
+                                    new SwipeItem(20, "W Train", "Broadway Local"),
+                                    new SwipeItem(21, "Z Train", "Nassau Street Express"),
+                                    new SwipeItem(22, "S Train", "42nd Street Shuttle")
+
+                            );
+
+                            SwipeSelector swipeSelector3 = (SwipeSelector) dialogLayout.findViewById(R.id.swipeSelector3);
+                            swipeSelector3.setItems(
+                                    new SwipeItem(0, "Uptown", "Train headed Uptown"),
+                                    new SwipeItem(1, "Downtown", "Train headed Downtown")
+
+                            );
+
+
+                            builder.setView(dialogLayout);
+                            builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    loggedUser = FirebaseAuth.getInstance().getCurrentUser();
+                                    mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(loggedUser.getUid());
+                                    Calendar expirationTime = GregorianCalendar.getInstance();
+                                    Calendar postedTime = GregorianCalendar.getInstance();
+                                    SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+                                    SimpleDateFormat timeFormat12 = new SimpleDateFormat("h:mm a");
+                                    expirationTime.add(GregorianCalendar.MINUTE, 10);
+
+                                    SwipeItem selectedItem2 = swipeSelector2.getSelectedItem();
+                                    int iconValue = (Integer) selectedItem2.value;
+
+                                    SwipeItem selectedItem = swipeSelector.getSelectedItem();
+                                    int value = (Integer) selectedItem.value;
+
+                                    switch (value) {
+                                        case 0:
+                                            Marker eventDrop = mMap.addMarker(new MarkerOptions()
+                                                    .position(latLng)
+                                                    .title(loggedUser.getUid())
+                                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.traffic))
+                                                    .draggable(false));
+                                            eventName = "Train Traffic";
+                                            mDatabase.child("marker").child("latlng").setValue(latLng);
+                                            mDatabase.child("marker").child("name").setValue(eventName);
+                                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
+                                            mDatabase.child("marker").child("icon").setValue(iconValue);
+                                            mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
+                                            mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
+
+                                            break;
+                                        case 1:
+                                            Marker eventDrop1 = mMap.addMarker(new MarkerOptions()
+                                                    .position(latLng)
+                                                    .title(loggedUser.getUid())
+                                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.police))
+                                                    .draggable(false));
+                                            eventName = "Police Investigation";
+                                            mDatabase.child("marker").child("latlng").setValue(latLng);
+                                            mDatabase.child("marker").child("name").setValue(eventName);
+                                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
+                                            mDatabase.child("marker").child("icon").setValue(iconValue);
+                                            mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
+                                            mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
+
+                                            break;
+                                        case 2:
+                                            Marker eventDrop2 = mMap.addMarker(new MarkerOptions()
+                                                    .position(latLng)
+                                                    .title(loggedUser.getUid())
+                                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.sick))
+                                                    .draggable(false));
+                                            eventName = "Sick Passenger";
+                                            mDatabase.child("marker").child("latlng").setValue(latLng);
+                                            mDatabase.child("marker").child("name").setValue(eventName);
+                                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
+                                            mDatabase.child("marker").child("icon").setValue(iconValue);
+                                            mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
+                                            mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
+
+                                            break;
+                                        case 3:
+                                            Marker eventDrop3 = mMap.addMarker(new MarkerOptions()
+                                                    .position(latLng)
+                                                    .title(loggedUser.getUid())
+                                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.signal))
+                                                    .draggable(false));
+                                            eventName = "Signal Malfunction";
+                                            mDatabase.child("marker").child("latlng").setValue(latLng);
+                                            mDatabase.child("marker").child("name").setValue(eventName);
+                                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
+                                            mDatabase.child("marker").child("icon").setValue(iconValue);
+                                            mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
+                                            mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
+
+                                            break;
+                                        default:
+                                            Marker eventDrop4 = mMap.addMarker(new MarkerOptions()
+                                                    .position(latLng)
+                                                    .title(loggedUser.getUid())
+                                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.fasttrack))
+                                                    .draggable(false));
+                                            eventName = "FastTrack";
+                                            mDatabase.child("marker").child("latlng").setValue(latLng);
+                                            mDatabase.child("marker").child("name").setValue(eventName);
+                                            mDatabase.child("marker").child("expiration").setValue(timeFormat.format(expirationTime.getTime()));
+                                            mDatabase.child("marker").child("icon").setValue(iconValue);
+                                            mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
+                                            mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
+
+                                            break;
+
+                                    }
+                                    //mDatabase.child("marker").
+                                }
+                            });
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            });
+                            builder.show();
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+            }
+        });
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker arg0) {
@@ -544,6 +616,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 });
                 displayName = (TextView) customView.findViewById(R.id.user);
                 repScore = (TextView) customView.findViewById(R.id.score);
+                postTime = (TextView) customView.findViewById(R.id.postedTime);
+
                 mDatabase = FirebaseDatabase.getInstance().getReference();
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     public void onDataChange(DataSnapshot snapshot) {
@@ -636,7 +710,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         if (fName != null) {
                             displayName.setText("By: " + fName + " " + lName);
-                            repScore.setText(postedTime);
+                            repScore.setText("120");
+                            postTime.setText(postedTime);
                             BottomDialog bottomDialog = new BottomDialog.Builder(MapsActivity.this)
 
                                     .setIcon(icon)
@@ -782,11 +857,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onPoiClick(PointOfInterest poi) {
-        Toast.makeText(getApplicationContext(), "Clicked: " +
+      /*  Toast.makeText(getApplicationContext(), "Clicked: " +
                         poi.name + "\nPlace ID:" + poi.placeId +
                         "\nLatitude:" + poi.latLng.latitude +
                         " Longitude:" + poi.latLng.longitude,
-                Toast.LENGTH_SHORT).show();
+                Toast.LENGTH_SHORT).show();*/
     }
 
 

@@ -11,10 +11,10 @@
         android:orientation="vertical">
 
         <android.support.design.widget.TextInputLayout
-            android:layout_marginTop="100dp"
-
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp">
 
             <LinearLayout
 
@@ -93,9 +93,9 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_marginBottom="20dp"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
-            android:layout_marginBottom="20dp"
             android:background="#000" />
 
         <ImageView
@@ -105,75 +105,65 @@
             android:layout_gravity="center"
 
 
-             />
+            />
+
         <LinearLayout
             android:id="@+id/LinearLayout02"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
+            android:layout_alignParentBottom="true"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
-            android:layout_marginTop="20dp"
-            android:layout_alignParentBottom="true">
+            android:layout_marginTop="20dp">
+
             <Button
                 android:id="@+id/btn_chooseImg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
                 android:layout_gravity="center"
-
                 android:layout_marginRight="35dp"
+                android:background="@drawable/rounded"
                 android:letterSpacing="0.025"
                 android:padding="10dp"
                 android:text="Select Image"
-                android:background="@drawable/rounded"
-
                 android:textAlignment="center"
                 android:textColor="@color/edit_profile"
-                android:textSize="16dp" />
+                android:textSize="12dp" />
+
             <Button
                 android:id="@+id/btn_uploadImg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
                 android:layout_gravity="center"
                 android:background="@drawable/rounded"
                 android:letterSpacing="0.025"
                 android:padding="10dp"
                 android:text="upload Image"
                 android:textAlignment="center"
-
                 android:textColor="@color/edit_profile"
-                android:textSize="16dp" />
+                android:textSize="12dp" />
         </LinearLayout>
-
-
-
 
 
         <Button
             android:id="@+id/btn_saveChanges"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
-            android:textColor="@color/edit_profile"
-
-
             android:layout_gravity="center"
-            android:layout_marginTop="60dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/rounded"
             android:letterSpacing="0.025"
             android:padding="10dp"
             android:text="Save Changes"
             android:textAlignment="center"
-            android:textSize="16dp" />
-
-
-
-
+            android:textColor="@color/edit_profile"
+            android:textSize="12dp" />
 
 
     </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

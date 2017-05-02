@@ -44,11 +44,6 @@ import java.util.TimerTask;
 
 public class AlertActivity extends AppCompatActivity {
     private ResponseReceiver receiver;
-    ImageButton btnAlerts;
-    ImageButton btnMaps;
-    ImageButton btnSchedule;
-    ImageButton btnoffMap;
-    ImageButton btnSetting;
 
 
     @Override
@@ -61,6 +56,31 @@ public class AlertActivity extends AppCompatActivity {
         //startService(intent);
         //new DataFeedTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
+
+
+        BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(@IdRes int tabId) {
+                if (tabId == R.id.tab_planner) {
+                    Intent planner = new Intent(AlertActivity.this, MapsActivity.class);
+                    startActivity(planner);
+                } else if (tabId == R.id.tab_nearby) {
+                    Intent offlineMap = new Intent(AlertActivity.this, offMap.class);
+                    startActivity(offlineMap);
+                } /*else if (tabId == R.id.tab_schedule) {
+                    Intent schedule = new Intent(AlertActivity.this, trainSchedule.class);
+                    startActivity(schedule);
+                } */ else if (tabId == R.id.tab_alerts) {
+                    Intent alerts = new Intent(AlertActivity.this, AlertActivity.class);
+                    startActivity(alerts);
+                } else if (tabId == R.id.tab_profile) {
+                    Intent setting = new Intent(AlertActivity.this, ProfileActivity.class);
+                    startActivity(setting);
+                }
+            }
+
+        });
         IntentFilter filter = new IntentFilter(ResponseReceiver.ACTION_RESP);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         receiver = new ResponseReceiver();
@@ -75,16 +95,6 @@ public class AlertActivity extends AppCompatActivity {
             }
         }, 0, period);
 
-
-
-
-
-
-        //Alerts();
-       // Maps();
-        //offMap();
-        //Schedule();
-        //Settings();
 
     }
 
