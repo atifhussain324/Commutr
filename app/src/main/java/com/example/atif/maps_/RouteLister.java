@@ -1,4 +1,4 @@
-package Modules;
+package com.example.atif.maps_;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -37,33 +37,28 @@ public class RouteLister {
     private String destination;
     public static ArrayList<RouteOption> routeList=  new ArrayList<>();
     private MapsActivity mActivity;
-    String preference;
+    private String preference;
 
-    public RouteLister(MapsActivity activity, String origin, String destination) {
+    public RouteLister(MapsActivity activity, String origin, String destination, String preference) {
         this.mActivity = activity;
         this.origin = origin;
         this.destination = destination;
+        this.preference = preference;
+        Log.v("preference",preference);
     }
+
 
     public void execute() throws UnsupportedEncodingException {
         new DownloadRawData().execute(createUrl());
     }
-    //test
-    public Intent getIntent() {
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-          preference= extras.getString("preference");
-            Log.v("preference",preference);
-        }
-        return null;
-    }
-    //end test
+
 
     private String createUrl() throws UnsupportedEncodingException {
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
         String urlDestination = URLEncoder.encode(destination, "utf-8");
-
-        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&mode=transit&transit_mode=subway&key=" + GOOGLE_API_KEY;
+        String completeURL = DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&mode=transit&transit_mode=subway&" + preference + "&key=" + GOOGLE_API_KEY;
+        Log.v("URL",completeURL);
+        return completeURL;
     }
 
 
