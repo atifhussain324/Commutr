@@ -104,9 +104,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Drawable icon;
     private String dropName;
     private View customView;
-    String preference;
-    String upvoteCount;
-    String downvoteCount;
+    private String preference = "";
+    private String upvoteCount;
+    private String downvoteCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         break;
                     case R.id.tab_directions:
+                        temp = RouteLister.routeList;
                         Intent i = new Intent(MapsActivity.this, routeActivity.class);
                         i.putExtra("FILES_TO_SEND", temp);
                         Log.v("routetest", "test");
@@ -197,7 +198,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         temp = RouteLister.routeList;
                         Intent i = new Intent(MapsActivity.this, routeActivity.class);
                         i.putExtra("FILES_TO_SEND", temp);
-                        Log.v("routetest", "test");
+                        Log.v("routetest", "temp size"+String.valueOf(temp.size()));
                         startActivity(i);
                         break;
                     case R.id.tab_preference_menu:
@@ -210,6 +211,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         if (which == 0) {
                                             Log.v("Dialog", "Best Route");
                                             preference = "";
+
                                         }
                                         if (which == 1) {
                                             Log.v("Dialog", "Less walking");
@@ -376,15 +378,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 int newNetVote = (upVote - downVote);
                                 netVote = netVote + newNetVote;
-                                mDatabase.child(loggedUser.getUid()).child("netVote").setValue(netVote);
+                                mDatabase.child(userID).child("netVote").setValue(netVote);
                                 if(newNetVote<0){
                                     reputation = reputation -1;
-                                    mDatabase.child(loggedUser.getUid()).child("reputation").setValue(reputation);
+                                    mDatabase.child(userID).child("reputation").setValue(reputation);
                                 }
                                 else{
 
                                     reputation = reputation +1;
-                                    mDatabase.child(loggedUser.getUid()).child("reputation").setValue(reputation);
+                                    mDatabase.child(userID).child("reputation").setValue(reputation);
                                 }
 
                                 snapshot.child("marker").getRef().removeValue();
@@ -507,7 +509,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     Calendar postedTime = GregorianCalendar.getInstance();
                                     SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
                                     SimpleDateFormat timeFormat12 = new SimpleDateFormat("h:mm a");
-                                    expirationTime.add(GregorianCalendar.MINUTE, 10);
+                                    expirationTime.add(GregorianCalendar.MINUTE, 2);
 
                                     SwipeItem selectedItem2 = swipeSelector2.getSelectedItem();
                                     int iconValue = (Integer) selectedItem2.value;

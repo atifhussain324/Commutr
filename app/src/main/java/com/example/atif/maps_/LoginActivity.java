@@ -205,9 +205,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                            Log.v("googleSignin","Before if");
                             if(!dataSnapshot.child("users").hasChild(loggedUser.getUid())){
-                                Log.v("googleSignin","inside if");
                                 mDatabase.child("users").child(loggedUser.getUid()).child("reputation").setValue(0);
                                 mDatabase.child("users").child(loggedUser.getUid()).child("netVote").setValue(0);
                                 String[] names =loggedUser.getDisplayName().split(" ");

@@ -15,6 +15,7 @@ import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.vision.text.Text;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +31,7 @@ import com.roughike.bottombar.OnTabSelectListener;
 import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
-    private TextView displayName, reputation;
+    private TextView displayName, reputation, netVote;
     private ImageView proPic;
     private Button signOut, editProfile;
     private DatabaseReference mDatabase;
@@ -48,6 +49,7 @@ public class ProfileActivity extends AppCompatActivity {
         proPic = (ImageView) findViewById(R.id.propic);
         reputation = (TextView) findViewById(R.id.txtView_reputation);
         editProfile= (Button) findViewById(R.id.btn_editProfile);
+        netVote = (TextView) findViewById(R.id.txtView_netVote);
 
 
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
@@ -82,7 +84,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
 
-
+        //Reading values from DB to display on the profile
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -97,6 +99,11 @@ public class ProfileActivity extends AppCompatActivity {
                     displayName.setText(firstName+" "+lastName);
                     //reputation.setText(Integer.toString(info.getReputation()));
                 }
+                String userReputation = dataSnapshot.child("users").child(uid).child("reputation").getValue().toString();
+                String userNetVotes= dataSnapshot.child("users").child(uid).child("netVote").getValue().toString();
+
+                reputation.setText(userReputation);
+                netVote.setText(userNetVotes);
 
 
             }

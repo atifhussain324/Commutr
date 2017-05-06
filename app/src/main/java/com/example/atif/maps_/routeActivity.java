@@ -29,10 +29,14 @@ public class routeActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         ArrayList<RouteOption> routeList = (ArrayList<RouteOption>) getIntent().getSerializableExtra("FILES_TO_SEND");
-        Log.v("ListSize",String.valueOf(routeList.size()));
+
+        Log.v("ListSize","routerList list"+String.valueOf(RouteLister.routeList.size()));
+
+        Log.v("ListSize","routeActivity list"+String.valueOf(routeList.size()));
         Recycler_Route_Adapter adapter = new Recycler_Route_Adapter(routeList, getApplication());
         recyclerView.setAdapter(adapter);
 
+        RouteLister.routeList.clear();
 
 
 
