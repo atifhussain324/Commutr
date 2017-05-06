@@ -210,6 +210,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 Log.v("googleSignin","inside if");
                                 mDatabase.child("users").child(loggedUser.getUid()).child("reputation").setValue(0);
                                 mDatabase.child("users").child(loggedUser.getUid()).child("netVote").setValue(0);
+                                String[] names =loggedUser.getDisplayName().split(" ");
+                                mDatabase.child("users").child(loggedUser.getUid()).child("firstName").setValue(names[0]);
+                                mDatabase.child("users").child(loggedUser.getUid()).child("lastName").setValue(names[1]);
+
 
                             }
 
