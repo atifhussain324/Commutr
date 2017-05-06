@@ -62,7 +62,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DBuse" />
+        <activity android:name=".DBuseActivity" />
         <activity android:name=".offMap" />
         <activity
             android:name=".SettingsActivity"

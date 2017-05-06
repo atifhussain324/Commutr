@@ -116,6 +116,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            //Go to login
+            Intent i = new Intent(MapsActivity.this, LoginActivity.class);
+            startActivity(i);
+
+        }
+        else{
+            loggedUser = FirebaseAuth.getInstance().getCurrentUser();
+        }
+
         //Bottom Navigation Bar
         BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
         bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
@@ -127,10 +139,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else if (tabId == R.id.tab_nearby) {
                     Intent offlineMap = new Intent(MapsActivity.this, offMap.class);
                     startActivity(offlineMap);
-                } /*else if (tabId == R.id.tab_schedule) {
+                /*} else if (tabId == R.id.tab_schedule) {
                     Intent schedule = new Intent(MapsActivity.this, trainSchedule.class);
                     startActivity(schedule);
-                } */ else if (tabId == R.id.tab_alerts) {
+                */}  else if (tabId == R.id.tab_alerts) {
                     Intent alerts = new Intent(MapsActivity.this, AlertActivity.class);
                     startActivity(alerts);
                 } else if (tabId == R.id.tab_profile) {
@@ -406,7 +418,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onMapLongClick(final LatLng latLng) {
                 mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-                loggedUser = FirebaseAuth.getInstance().getCurrentUser();
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     public void onDataChange(DataSnapshot snapshot) {
                         // Reads if Marker exists for user in database
@@ -473,7 +484,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    loggedUser = FirebaseAuth.getInstance().getCurrentUser();
                                     mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(loggedUser.getUid());
                                     Calendar expirationTime = GregorianCalendar.getInstance();
                                     Calendar postedTime = GregorianCalendar.getInstance();
@@ -600,6 +610,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 customView = inflater.inflate(R.layout.bottomdialog_layout, null);
 
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+
                 ImageButton upvoteButton = (ImageButton) customView.findViewById(R.id.upvote);
                 ImageButton downvoteButton = (ImageButton) customView.findViewById(R.id.downvote);
 
@@ -610,7 +622,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         int upCount = Integer.parseInt(upvoteCount) + 1;
                         Log.v("downClick",String.valueOf(upCount));
 
-                        mDatabase.child("marker").child("upvote").setValue(upCount);
+                        mDatabase.child("users").child(loggedUser.getUid()).child("marker").child("upvote").setValue(upCount);
 
                     }
                 });
@@ -618,10 +630,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 downvoteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        int downCount = Integer.parseInt(upvoteCount) - 1;
+                        int downCount = Integer.parseInt(downvoteCount) + 1;
                         Log.v("downClick",String.valueOf(downCount));
 
-                        mDatabase.child("marker").child("upvote").setValue(downCount);
+                        mDatabase.child("users").child(loggedUser.getUid()).child("marker").child("downvote").setValue(downCount);
                     }
                 });
 
@@ -631,7 +643,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 upvoteText = (TextView) customView.findViewById(R.id.upvoteCount);
                 downvoteText = (TextView) customView.findViewById(R.id.downvoteCount);
 
-                mDatabase = FirebaseDatabase.getInstance().getReference();
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     public void onDataChange(DataSnapshot snapshot) {
                         String fName = snapshot.child("users").child(arg0.getTitle()).child("firstName").getValue().toString();

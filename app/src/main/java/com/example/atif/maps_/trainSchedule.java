@@ -86,7 +86,7 @@ public class trainSchedule extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_train_schedule);
-        listview = (ListView) findViewById(R.id.listView1);
+        //listview = (ListView) findViewById(R.id.listView1);
         editText = (EditText) findViewById(R.id.stationname);
         button = (Button) findViewById(R.id.search);
 
@@ -94,63 +94,17 @@ public class trainSchedule extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("Main","Click started");
-                Intent intent = new Intent(getApplicationContext(), DBuse.class);
+                Intent intent = new Intent(getApplicationContext(), DBuseActivity.class);
                 String message = editText.getText().toString();
                 intent.putExtra(MESSAGE_KEY,message);
                 startActivity(intent);
                 Log.d("Main","Click");
             }
         });
-        getTrainInfo ga = new getTrainInfo();
-        ga.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        //getTrainInfo ga = new getTrainInfo();
+        //ga.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
     }
-    private class getTrainInfo extends AsyncTask<Void, Void, Void>{
 
-        ArrayList<String> announcements = new ArrayList<>();
-        private ProgressDialog pDiaLog;
-
-        @Override
-        protected void onPreExecute(){
-            pDiaLog = new ProgressDialog(trainSchedule.this);
-            pDiaLog.setCancelable(false);
-            pDiaLog.setMessage("Waiting...");
-            showDialog();
-
-            super.onPreExecute();
-
-        }
-        @Override
-        protected Void doInBackground(Void... voids) {
-            DBCreater db = new DBCreater();
-            announcements = db.trainInfo();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid){
-            pushToView(announcements);
-            hideDialog();
-            super.onPostExecute(aVoid);
-        }
-
-        private void showDialog(){
-            if(!pDiaLog.isShowing()){
-                pDiaLog.show();
-            }
-        }
-
-        private void hideDialog(){
-            if(pDiaLog.isShowing()){
-                pDiaLog.hide();
-            }
-        }
-    }
-
-    private void pushToView(ArrayList<String> announcements){
-        ArrayAdapter<String> adapter;
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, announcements);
-        listview.setAdapter(adapter);
-    }
 }

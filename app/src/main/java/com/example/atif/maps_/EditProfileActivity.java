@@ -69,8 +69,17 @@ public class EditProfileActivity extends AppCompatActivity {
         //**
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        loggedUser= FirebaseAuth.getInstance().getCurrentUser();
 
+        //If the user is null go login again
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            //Go to login
+            Intent i = new Intent(EditProfileActivity.this, LoginActivity.class);
+            startActivity(i);
+
+        }
+        else{
+            loggedUser = FirebaseAuth.getInstance().getCurrentUser();
+        }
 
         //Reading the userInfo object from db
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -84,6 +93,11 @@ public class EditProfileActivity extends AppCompatActivity {
                     if(info!=null) {
                         fName.setText(info.getFirstName());
                         lName.setText(info.getLastName());
+                    }
+
+                    if(!dataSnapshot.child("users").child(uid).hasChild("reputation")){
+                        mDatabase.child("users").child(uid).child("reputation").setValue(0);
+                        mDatabase.child("users").child(uid).child("netVotes").setValue(0);
                     }
 
                 }
@@ -147,6 +161,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         mDatabase.child("users").child(uid).child("firstName").setValue(fName.getText().toString());
                         mDatabase.child("users").child(uid).child("lastName").setValue(lName.getText().toString());
 
+
                 Toast.makeText(EditProfileActivity.this, "Profile Updated Successfully", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(EditProfileActivity.this, MapsActivity.class);
                 startActivity(intent);
@@ -195,7 +210,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 imgView.setImageBitmap(bitmap);
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.v("editProfileTest","Didnt work");
+                Log.v("editProfileTest","Didn't work");
 
             }
         }

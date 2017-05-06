@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class DBuse extends AppCompatActivity {
+public class DBuseActivity extends AppCompatActivity {
     ListView listview;
     ImageButton btnAlerts;
     ImageButton btnMaps;
@@ -29,9 +29,9 @@ public class DBuse extends AppCompatActivity {
 
     public final static String MESSAGE_KEY = "com.example.atif.commutr_.message_key";
 
-    private static final String url = "jdbc:mysql://104.196.170.96:3306/commutr";
+    private static final String url = "jdbc:mysql://130.211.231.29:3306/commutr";
     private static final String dbUsername = "root";
-    private static final String dbPassword = "Seniorproject1";
+    private static final String dbPassword = "rahman1";
     private static final String driver = "com.mysql.jdbc.Driver";
     private String message;
     private Connection conn;
@@ -43,7 +43,7 @@ public class DBuse extends AppCompatActivity {
         btnSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent time = new Intent(DBuse.this, trainSchedule.class);
+                Intent time = new Intent(DBuseActivity.this, trainSchedule.class);
                 startActivity(time);
             }
         });
@@ -54,7 +54,7 @@ public class DBuse extends AppCompatActivity {
         btnAlerts.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Intent alerts = new Intent(DBuse.this, AlertActivity.class);
+                Intent alerts = new Intent(DBuseActivity.this, AlertActivity.class);
                 startActivity(alerts);
             }
         });
@@ -64,7 +64,7 @@ public class DBuse extends AppCompatActivity {
         btnMaps.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Intent alerts = new Intent(DBuse.this, MapsActivity.class);
+                Intent alerts = new Intent(DBuseActivity.this, MapsActivity.class);
                 startActivity(alerts);
             }
         });
@@ -74,7 +74,7 @@ public class DBuse extends AppCompatActivity {
         btnoffMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent offMaps = new Intent(DBuse.this, offMap.class);
+                Intent offMaps = new Intent(DBuseActivity.this, offMap.class);
                 startActivity(offMaps);
             }
         });
@@ -84,7 +84,7 @@ public class DBuse extends AppCompatActivity {
         btnSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent setting = new Intent(DBuse.this, SettingsActivity.class);
+                Intent setting = new Intent(DBuseActivity.this, SettingsActivity.class);
                 startActivity(setting);
             }
         });
@@ -104,7 +104,7 @@ public class DBuse extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(DBuse.this, trainSchedule.class));
+                startActivity(new Intent(DBuseActivity.this, trainSchedule.class));
 
 
 
@@ -128,7 +128,7 @@ public class DBuse extends AppCompatActivity {
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
-            pDiaLog = new ProgressDialog(DBuse.this);
+            pDiaLog = new ProgressDialog(DBuseActivity.this);
             pDiaLog.setCancelable(true);
             pDiaLog.setMessage("Waiting...");
             Log.d("Dbuse","Inside preexecute");
@@ -138,13 +138,13 @@ public class DBuse extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... voids) {
-            //DBuse db = new DBuse();
+            //DBuseActivity db = new DBuseActivity();
             conn = null;
             try{
                 Class.forName(driver);
                 conn = DriverManager.getConnection(url, dbUsername, dbPassword);
             }catch(Exception e){
-                Log.e("DBuse network",e.getMessage());
+                Log.e("DBuseActivity network",e.getMessage());
                 e.printStackTrace();
             }
             if(conn!= null) {

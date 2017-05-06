@@ -186,7 +186,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
@@ -197,12 +197,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
 
+
+
                 mDatabase = FirebaseDatabase.getInstance().getReference();
                 loggedUser= FirebaseAuth.getInstance().getCurrentUser();
 
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.v("googleSignin","Before if");
+                            if(!dataSnapshot.child("users").hasChild(loggedUser.getUid())){
+                                Log.v("googleSignin","inside if");
+                                mDatabase.child("users").child(loggedUser.getUid()).child("reputation").setValue(0);
+                                mDatabase.child("users").child(loggedUser.getUid()).child("netVote").setValue(0);
+
+                            }
 
                             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                             startActivity(intent);
