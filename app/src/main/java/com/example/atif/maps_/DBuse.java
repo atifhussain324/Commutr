@@ -19,77 +19,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import Modules.RouteLister;
+
 public class DBuse extends AppCompatActivity {
     ListView listview;
-    ImageButton btnAlerts;
-    ImageButton btnMaps;
-    ImageButton btnSchedule;
-    ImageButton btnoffMap;
-    ImageButton btnSetting;
 
     public final static String MESSAGE_KEY = "com.example.atif.commutr_.message_key";
 
-    private static final String url = "jdbc:mysql://104.196.170.96:3306/commutr";
+    private static final String url = "jdbc:mysql://130.211.231.29:3306/commutr";
     private static final String dbUsername = "root";
-    private static final String dbPassword = "Seniorproject1";
+    private static final String dbPassword = "rahman1";
     private static final String driver = "com.mysql.jdbc.Driver";
     private String message;
     private Connection conn;
+    String index;
+    String query;
 
-    /*
-    //Button
-    public void Schedule() {
-        btnSchedule = (ImageButton) findViewById(R.id.schedule);
-        btnSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent time = new Intent(DBuse.this, trainSchedule.class);
-                startActivity(time);
-            }
-        });
-    }
-
-    public void Alerts(){
-        btnAlerts = (ImageButton) findViewById(R.id.btnAlerts);
-        btnAlerts.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Intent alerts = new Intent(DBuse.this, AlertActivity.class);
-                startActivity(alerts);
-            }
-        });
-    }
-    public void Maps(){
-        btnMaps = (ImageButton) findViewById(R.id.planner);
-        btnMaps.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Intent alerts = new Intent(DBuse.this, MapsActivity.class);
-                startActivity(alerts);
-            }
-        });
-    }
-    public void offMap(){
-        btnoffMap = (ImageButton) findViewById(R.id.offlinemap);
-        btnoffMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent offMaps = new Intent(DBuse.this, offMap.class);
-                startActivity(offMaps);
-            }
-        });
-    }
-    public void Settings(){
-        btnSetting = (ImageButton) findViewById(R.id.setting);
-        btnSetting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent setting = new Intent(DBuse.this, SettingsActivity.class);
-                startActivity(setting);
-            }
-        });
-    }
-    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,12 +56,8 @@ public class DBuse extends AppCompatActivity {
 
             }
         });
+        index = getIntent().getStringExtra("transportation");
 
-        //Alerts();
-        //Maps();
-       // offMap();
-       // Schedule();
-        //Settings();
     }
 
     private class getTrainInfo extends AsyncTask<Void, Void, Void> {
@@ -180,18 +121,29 @@ public class DBuse extends AppCompatActivity {
             }
         }
     }
+
     public ArrayList<String> trainInfo(){
         final ArrayList<String> annoucements = new ArrayList<>();
-
-        String query = "select route_id, trip_headsign, round(time_to_sec(subtime(time_format(now(),'%H:%i:%S'), " +
-                "arrival_time))/60) as estTime " +
-                "from stops, stop_times, trips " +
-                "where stops.stop_id = stop_times.stop_id " +
-                "and stop_times.trip_id = trips.trip_id " +
-                "and stops.stop_name LIKE '%"+message+"%' " +
-                "and stop_times.arrival_time < time_format(now(),'%H:%i:%S') " +
-                "order by estTime asc limit 15;";
-
+        if (index.equals("train")) {
+            query = "select route_id, trip_headsign, round(time_to_sec(subtime(time_format(now(),'%H:%i:%S'), " +
+                    "arrival_time))/60) as estTime " +
+                    "from stops, stop_times, trips " +
+                    "where stops.stop_id = stop_times.stop_id " +
+                    "and stop_times.trip_id = trips.trip_id " +
+                    "and stops.stop_name LIKE '%" + message + "%' " +
+                    "and stop_times.arrival_time < time_format(now(),'%H:%i:%S') " +
+                    "order by estTime asc limit 15;";
+        }
+        else {
+            query = "select route_id, trip_headsign, " +
+                    "round( time_to_sec(subtime(arrival_time, time_format(now(),'%H:%i:%S')))/60) as estTime " +
+                    "from bustrips, newbusstop_times, busstops " +
+                    "where busstops.stop_id = newbusstop_times.stop_id " +
+                    "and bustrips.trip_id = newbusstop_times.trip_id " +
+                    "and busstops.stop_name like '%" + message + "%' " +
+                    "and arrival_time > time_format(now(),'%H:%i:%S') " +
+                    "limit 5;";
+        }
         try{
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(query);

@@ -8,23 +8,28 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import java.util.ArrayList;
+
+import Modules.RouteLister;
 
 public class trainSchedule extends AppCompatActivity {
 
-    EditText editText;
+    AutoCompleteTextView editText;
     Button button;
     ImageButton btnAlerts;
     ImageButton btnMaps;
     ImageButton btnSchedule;
     ImageButton btnoffMap;
     ImageButton btnSetting;
-
+String index;
     ListView listview;
     public final static String MESSAGE_KEY = "com.example.atif.commutr_.message_key";
 
@@ -87,70 +92,44 @@ public class trainSchedule extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_train_schedule);
         listview = (ListView) findViewById(R.id.listView1);
-        editText = (EditText) findViewById(R.id.stationname);
+        editText = (AutoCompleteTextView) findViewById(R.id.stationname);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item);
+        editText.setAdapter(adapter);
         button = (Button) findViewById(R.id.search);
 
         button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Log.d("Main","Click started");
                 Intent intent = new Intent(getApplicationContext(), DBuse.class);
                 String message = editText.getText().toString();
                 intent.putExtra(MESSAGE_KEY,message);
+                intent.putExtra("transportation", index);
                 startActivity(intent);
-                Log.d("Main","Click");
+
             }
         });
-        getTrainInfo ga = new getTrainInfo();
-        ga.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        new MaterialDialog.Builder(trainSchedule.this)
+                .title("Choose Transportation")
+                .items(R.array.transportation)
+                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
+                    @Override
+                    public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        if (which == 0) {
+                            index = "train";
+                        }
+                        else{
+                            index = "bus";
+                        }
+                        return true;
+                    }
+                })
+                .negativeText(R.string.Cancel)
+                .positiveText(R.string.OK)
+                .show();
 
 
     }
-    private class getTrainInfo extends AsyncTask<Void, Void, Void>{
 
-        ArrayList<String> announcements = new ArrayList<>();
-        private ProgressDialog pDiaLog;
 
-        @Override
-        protected void onPreExecute(){
-            pDiaLog = new ProgressDialog(trainSchedule.this);
-            pDiaLog.setCancelable(false);
-            pDiaLog.setMessage("Waiting...");
-            showDialog();
-
-            super.onPreExecute();
-
-        }
-        @Override
-        protected Void doInBackground(Void... voids) {
-            DBCreater db = new DBCreater();
-            announcements = db.trainInfo();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid){
-            pushToView(announcements);
-            hideDialog();
-            super.onPostExecute(aVoid);
-        }
-
-        private void showDialog(){
-            if(!pDiaLog.isShowing()){
-                pDiaLog.show();
-            }
-        }
-
-        private void hideDialog(){
-            if(pDiaLog.isShowing()){
-                pDiaLog.hide();
-            }
-        }
-    }
-
-    private void pushToView(ArrayList<String> announcements){
-        ArrayAdapter<String> adapter;
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, announcements);
-        listview.setAdapter(adapter);
-    }
 }

@@ -106,6 +106,12 @@
         <item>Fewer Transfers</item>
     </string-array>
 
+    <string-array name="transportation">
+        <item>Train</item>
+        <item>Bus</item>
+
+    </string-array>
+
 
     <string name="OK">Okay</string>
     <string name="Cancel">Cancel</string>
