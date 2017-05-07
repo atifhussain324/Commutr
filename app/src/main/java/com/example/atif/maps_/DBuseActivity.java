@@ -3,13 +3,12 @@ package com.example.atif.maps_;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.sql.Connection;
@@ -19,9 +18,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import Modules.RouteLister;
-
-public class DBuse extends AppCompatActivity {
+public class DBuseActivity extends AppCompatActivity {
     ListView listview;
 
     public final static String MESSAGE_KEY = "com.example.atif.commutr_.message_key";
@@ -49,7 +46,7 @@ public class DBuse extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(DBuse.this, trainSchedule.class));
+                startActivity(new Intent(DBuseActivity.this, trainSchedule.class));
 
 
 
@@ -69,7 +66,7 @@ public class DBuse extends AppCompatActivity {
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
-            pDiaLog = new ProgressDialog(DBuse.this);
+            pDiaLog = new ProgressDialog(DBuseActivity.this);
             pDiaLog.setCancelable(true);
             pDiaLog.setMessage("Waiting...");
             Log.d("Dbuse","Inside preexecute");
@@ -158,7 +155,7 @@ public class DBuse extends AppCompatActivity {
                 String trainID = rs.getString(1);
                 String Direction = rs.getString(2);
                 String time = rs.getString(3);
-                String display = trainID +"                                                     "+time+"Minutes" + "\n" +"Towards "+ Direction;
+                String display = trainID +""+time+"Minutes" + "\n" +"Towards "+ Direction;
                 annoucements.add(display);
             }
             rs.close();

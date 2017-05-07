@@ -138,10 +138,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else if (tabId == R.id.tab_nearby) {
                     Intent offlineMap = new Intent(MapsActivity.this, offMap.class);
                     startActivity(offlineMap);
-                }/* else if (tabId == R.id.tab_schedule) {
+                }else if (tabId == R.id.tab_schedule) {
                     Intent schedule = new Intent(MapsActivity.this, trainSchedule.class);
                     startActivity(schedule);
-                }*/ else if (tabId == R.id.tab_alerts) {
+                } else if (tabId == R.id.tab_alerts) {
                     Intent alerts = new Intent(MapsActivity.this, AlertActivity.class);
                     startActivity(alerts);
                 } else if (tabId == R.id.tab_profile) {
