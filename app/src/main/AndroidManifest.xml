@@ -24,6 +24,7 @@
             android:value="@string/google_maps_key" />
 
         <activity android:name=".SignupActivity" />
+
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -61,7 +62,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DBuse" />
+        <activity android:name=".DBuseActivity" />
         <activity android:name=".offMap" />
         <activity
             android:name=".SettingsActivity"

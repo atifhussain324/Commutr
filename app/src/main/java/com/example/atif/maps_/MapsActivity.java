@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.bottomdialogs.BottomDialog;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
@@ -46,6 +47,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.vision.text.Text;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -60,6 +62,7 @@ import com.roughike.bottombar.OnTabSelectListener;
 import com.roughike.swipeselector.SwipeItem;
 import com.roughike.swipeselector.SwipeSelector;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -72,7 +75,6 @@ import java.util.List;
 import Modules.DirectionFinder;
 import Modules.DirectionFinderListener;
 import Modules.Route;
-import Modules.RouteLister;
 import Modules.RouteOption;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, DirectionFinderListener, LocationListener, GoogleApiClient.ConnectionCallbacks {
@@ -96,10 +98,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView displayName;
     private TextView repScore;
     private TextView postTime;
+    private TextView upvoteText;
+    private TextView downvoteText;
     private String eventName;
     private Drawable icon;
     private String dropName;
     private View customView;
+    private String preference = "";
+    private String upvoteCount;
+    private String downvoteCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +116,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            //Go to login
+            Intent i = new Intent(MapsActivity.this, LoginActivity.class);
+            startActivity(i);
+
+        } else {
+            loggedUser = FirebaseAuth.getInstance().getCurrentUser();
+        }
 
         //Bottom Navigation Bar
         BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
@@ -121,10 +138,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else if (tabId == R.id.tab_nearby) {
                     Intent offlineMap = new Intent(MapsActivity.this, offMap.class);
                     startActivity(offlineMap);
-                } else if (tabId == R.id.tab_schedule) {
+                }/* else if (tabId == R.id.tab_schedule) {
                     Intent schedule = new Intent(MapsActivity.this, trainSchedule.class);
                     startActivity(schedule);
-                }  else if (tabId == R.id.tab_alerts) {
+                }*/ else if (tabId == R.id.tab_alerts) {
                     Intent alerts = new Intent(MapsActivity.this, AlertActivity.class);
                     startActivity(alerts);
                 } else if (tabId == R.id.tab_profile) {
@@ -181,7 +198,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         temp = RouteLister.routeList;
                         Intent i = new Intent(MapsActivity.this, routeActivity.class);
                         i.putExtra("FILES_TO_SEND", temp);
-                        Log.v("routetest", "test");
+                        Log.v("routetest", "temp size"+String.valueOf(temp.size()));
                         startActivity(i);
                         break;
                     case R.id.tab_preference_menu:
@@ -191,26 +208,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
                                     @Override
                                     public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                        Intent i = new Intent(getApplicationContext(), RouteLister.class);
-                                        String preference;
                                         if (which == 0) {
                                             Log.v("Dialog", "Best Route");
                                             preference = "";
-                                            i.putExtra("preference", preference);
-                                            startActivity(i);
 
                                         }
                                         if (which == 1) {
                                             Log.v("Dialog", "Less walking");
                                             preference = "transit_routing_preference=less_walking";
-                                            i.putExtra("preference", preference);
-                                            startActivity(i);
                                         }
                                         if (which == 2) {
                                             Log.v("Dialog", "Fewer transfer");
                                             preference = "transit_routing_preference=fewer_transfers";
-                                            i.putExtra("preference", preference);
-                                            startActivity(i);
 
                                         }
                                         return true;
@@ -361,6 +370,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         .draggable(false));
                             } else {
                                 Log.v("TimeTest", "Else executed");
+                                int upVote= Integer.parseInt(snapshot.child("marker").child("upvote").getValue().toString());
+                                int downVote= Integer.parseInt(snapshot.child("marker").child("downvote").getValue().toString());
+
+                                int netVote= Integer.parseInt(snapshot.child("netVote").getValue().toString());
+                                int reputation= Integer.parseInt(snapshot.child("reputation").getValue().toString());
+
+                                int newNetVote = (upVote - downVote);
+                                netVote = netVote + newNetVote;
+                                mDatabase.child(userID).child("netVote").setValue(netVote);
+                                if(newNetVote<0){
+                                    reputation = reputation -1;
+                                    mDatabase.child(userID).child("reputation").setValue(reputation);
+                                }
+                                else{
+
+                                    reputation = reputation +1;
+                                    mDatabase.child(userID).child("reputation").setValue(reputation);
+                                }
+
                                 snapshot.child("marker").getRef().removeValue();
 
 
@@ -413,9 +441,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     public void onDataChange(DataSnapshot snapshot) {
                         // Reads if Marker exists for user in database
-                        if (snapshot.hasChild("marker")) {
+                        if (snapshot.child(loggedUser.getUid()).hasChild("marker")) {
                             Log.v("Marker1", "If");
-                            Toast.makeText(MapsActivity.this, "You have dropped an alert too recently!",
+                            Toast.makeText(MapsActivity.this, "You have dropped an alert recently!",
                                     Toast.LENGTH_LONG).show();
                         }
                         // Allows for marker drop if one does not exist
@@ -476,13 +504,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    loggedUser = FirebaseAuth.getInstance().getCurrentUser();
                                     mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(loggedUser.getUid());
                                     Calendar expirationTime = GregorianCalendar.getInstance();
                                     Calendar postedTime = GregorianCalendar.getInstance();
                                     SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
                                     SimpleDateFormat timeFormat12 = new SimpleDateFormat("h:mm a");
-                                    expirationTime.add(GregorianCalendar.MINUTE, 10);
+                                    expirationTime.add(GregorianCalendar.MINUTE, 2);
 
                                     SwipeItem selectedItem2 = swipeSelector2.getSelectedItem();
                                     int iconValue = (Integer) selectedItem2.value;
@@ -504,7 +531,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             mDatabase.child("marker").child("icon").setValue(iconValue);
                                             mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
                                             mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
-
+                                            mDatabase.child("marker").child("upvote").setValue(0);
+                                            mDatabase.child("marker").child("downvote").setValue(0);
+                                            mDatabase.child("marker").child("vote").child(loggedUser.getUid()).setValue("true");
                                             break;
                                         case 1:
                                             Marker eventDrop1 = mMap.addMarker(new MarkerOptions()
@@ -519,6 +548,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             mDatabase.child("marker").child("icon").setValue(iconValue);
                                             mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
                                             mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
+                                            mDatabase.child("marker").child("upvote").setValue(0);
+                                            mDatabase.child("marker").child("downvote").setValue(0);
+                                            mDatabase.child("marker").child("vote").child(loggedUser.getUid()).setValue("true");
 
                                             break;
                                         case 2:
@@ -534,6 +566,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             mDatabase.child("marker").child("icon").setValue(iconValue);
                                             mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
                                             mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
+                                            mDatabase.child("marker").child("upvote").setValue(0);
+                                            mDatabase.child("marker").child("downvote").setValue(0);
+                                            mDatabase.child("marker").child("vote").child(loggedUser.getUid()).setValue("true");
+
 
                                             break;
                                         case 3:
@@ -549,6 +585,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             mDatabase.child("marker").child("icon").setValue(iconValue);
                                             mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
                                             mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
+                                            mDatabase.child("marker").child("upvote").setValue(0);
+                                            mDatabase.child("marker").child("downvote").setValue(0);
+                                            mDatabase.child("marker").child("vote").child(loggedUser.getUid()).setValue("true");
+
 
                                             break;
                                         default:
@@ -564,6 +604,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             mDatabase.child("marker").child("icon").setValue(iconValue);
                                             mDatabase.child("marker").child("postedTime").setValue(timeFormat.format(postedTime.getTime()));
                                             mDatabase.child("marker").child("postedTime12").setValue(timeFormat12.format(postedTime.getTime()));
+                                            mDatabase.child("marker").child("upvote").setValue(0);
+                                            mDatabase.child("marker").child("downvote").setValue(0);
+                                            mDatabase.child("marker").child("vote").child(loggedUser.getUid()).setValue("true");
 
                                             break;
 
@@ -598,27 +641,70 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 customView = inflater.inflate(R.layout.bottomdialog_layout, null);
 
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+
                 ImageButton upvoteButton = (ImageButton) customView.findViewById(R.id.upvote);
                 ImageButton downvoteButton = (ImageButton) customView.findViewById(R.id.downvote);
+
 
                 upvoteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                            public void onDataChange(DataSnapshot snapshot) {
+                                if (snapshot.child("users").child(arg0.getTitle()).child("marker").child("vote").hasChild(loggedUser.getUid())) {
+                                    Toast.makeText(MapsActivity.this, "You have already voted!",
+                                            Toast.LENGTH_LONG).show();
+                                } else {
+                                    int upCount = Integer.parseInt(upvoteCount) + 1;
+                                    Log.v("downClick", String.valueOf(upCount));
+                                    mDatabase.child("users").child(arg0.getTitle()).child("marker").child("upvote").setValue(upCount);
+                                    mDatabase.child("users").child(arg0.getTitle()).child("marker").child("vote").child(loggedUser.getUid()).setValue("true");
+                                }
+                            }
 
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+
+
+                        });
                     }
                 });
+
 
                 downvoteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                            public void onDataChange(DataSnapshot snapshot) {
+                                if (snapshot.child("users").child(arg0.getTitle()).child("marker").child("vote").hasChild(loggedUser.getUid())) {
+                                    Toast.makeText(MapsActivity.this, "You have already voted!",
+                                            Toast.LENGTH_LONG).show();
+                                } else {
+                                    int downCount = Integer.parseInt(downvoteCount) + 1;
+                                    Log.v("downClick", String.valueOf(downCount));
+                                    mDatabase.child("users").child(arg0.getTitle()).child("marker").child("downvote").setValue(downCount);
+                                    mDatabase.child("users").child(arg0.getTitle()).child("marker").child("vote").child(loggedUser.getUid()).setValue("true");
+                                }
+                            }
 
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+
+                        });
                     }
                 });
+
                 displayName = (TextView) customView.findViewById(R.id.user);
                 repScore = (TextView) customView.findViewById(R.id.score);
                 postTime = (TextView) customView.findViewById(R.id.postedTime);
+                upvoteText = (TextView) customView.findViewById(R.id.upvoteCount);
+                downvoteText = (TextView) customView.findViewById(R.id.downvoteCount);
 
-                mDatabase = FirebaseDatabase.getInstance().getReference();
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     public void onDataChange(DataSnapshot snapshot) {
                         String fName = snapshot.child("users").child(arg0.getTitle()).child("firstName").getValue().toString();
@@ -626,6 +712,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         String iconIndex = snapshot.child("users").child(arg0.getTitle()).child("marker").child("icon").getValue().toString();
                         dropName = snapshot.child("users").child(arg0.getTitle()).child("marker").child("name").getValue().toString();
                         String postedTime = snapshot.child("users").child(arg0.getTitle()).child("marker").child("postedTime12").getValue().toString();
+                        upvoteCount = snapshot.child("users").child(arg0.getTitle()).child("marker").child("upvote").getValue().toString();
+                        downvoteCount = snapshot.child("users").child(arg0.getTitle()).child("marker").child("downvote").getValue().toString();
+
 
                        /* try {
                             SimpleDateFormat timeFormat12 = new SimpleDateFormat("h:mma");
@@ -708,21 +797,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
 
 
-                        if (fName != null) {
-                            displayName.setText("By: " + fName + " " + lName);
-                            repScore.setText("120");
-                            postTime.setText(postedTime);
-                            BottomDialog bottomDialog = new BottomDialog.Builder(MapsActivity.this)
+                        displayName.setText("By: " + fName + " " + lName);
+                        repScore.setText("120");
+                        postTime.setText(postedTime);
+                        upvoteText.setText(upvoteCount);
+                        downvoteText.setText(downvoteCount);
+                        BottomDialog bottomDialog = new BottomDialog.Builder(MapsActivity.this)
 
-                                    .setIcon(icon)
-                                    .setTitle(dropName)
-                                    .setCustomView(customView)
-                                    .setContent("comment")
-                                    .build();
-                            bottomDialog.show();
-                        }
-
+                                .setIcon(icon)
+                                .setTitle(dropName)
+                                .setCustomView(customView)
+                                .setContent("comment")
+                                .build();
+                        bottomDialog.show();
                     }
+
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
@@ -755,7 +844,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             try {
                 new DirectionFinder(this, mOrigin, mDestination).execute();
-                new RouteLister(MapsActivity.this, mOrigin, mDestination).execute();
+                new RouteLister(MapsActivity.this, mOrigin, mDestination, preference).execute();
             } catch (Exception e) {
                 Log.e("Find route", e.getMessage());
                 e.printStackTrace();
