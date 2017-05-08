@@ -65,6 +65,13 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.firebaseui:firebase-ui-storage:1.2.0'
     compile 'com.afollestad.material-dialogs:core:0.9.4.4'
+    compile 'com.github.gabrielemariotti.cards:cardslib-core:2.1.0'
+    compile 'com.github.gabrielemariotti.cards:cardslib-cards:2.1.0'
+    compile 'com.github.gabrielemariotti.cards:cardslib-recyclerview:2.1.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+
+
     testCompile 'junit:junit:4.12'
 
 }

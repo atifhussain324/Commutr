@@ -1,19 +1,12 @@
 package Modules;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
-import com.example.atif.maps_.Alert;
 import com.example.atif.maps_.R;
-import com.example.atif.maps_.View_Holder;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +15,7 @@ import java.util.List;
  * Created by Atif on 12/12/16.
  */
 
-public class Recycler_Route_Adapter  extends RecyclerView.Adapter<View_Holder_Planner> {
+public class Recycler_Route_Adapter extends RecyclerView.Adapter<View_Holder_Planner> {
 
     private int lastPosition = -1;
 
@@ -49,21 +42,19 @@ public class Recycler_Route_Adapter  extends RecyclerView.Adapter<View_Holder_Pl
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         //holder.timeRange.setText(list.get(position).getDepartureTime()+" - "+list.get(position).getArrivalTime());
         //holder.totalDuration.setText(list.get(position).getTotalDuration());
-        if(list.get(position).getTravel_mode().equals("WALKING")){
+        if (list.get(position).getTravel_mode().equals("WALKING")) {
             holder.title1.setText(list.get(position).getwName());
             holder.title2.setText(list.get(position).getwInstruction());
-            holder.title3.setText(list.get(position).getwDistance()+" "+list.get(position).getwDuration());
-        }
-        else{
+            holder.title3.setText(list.get(position).getwDistance() + " " + list.get(position).getwDuration());
+        } else {
             holder.title1.setText(list.get(position).getName());
-            holder.title2.setText(list.get(position).gettShortName()+" "+list.get(position).gettLongName());
+            holder.title2.setText(list.get(position).gettShortName() + " " + list.get(position).gettLongName());
             holder.title3.setText(list.get(position).getInstruction());
-            holder.title4.setText(list.get(position).getStops()+" Stops, "+list.get(position).getStepDuration());
+            holder.title4.setText(list.get(position).getStops() + " Stops, " + list.get(position).getStepDuration());
             //holder.cardView.setCardBackgroundColor(Color.parseColor(list.get(position).getColor()));
             //holder.cardView.getBackground().setColorFilter(Color.parseColor(list.get(position).getColor()), PorterDuff.Mode.DARKEN);
 
         }
-
 
 
         //Log.d("Adapter", list.get(position).getDepartureTime());

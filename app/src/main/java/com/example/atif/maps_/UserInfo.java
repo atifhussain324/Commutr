@@ -1,7 +1,5 @@
 package com.example.atif.maps_;
 
-import android.net.Uri;
-
 /**
  * Created by rahman on 4/12/17.
  */

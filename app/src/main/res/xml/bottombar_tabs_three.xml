@@ -5,19 +5,18 @@
         icon="@drawable/ic_menu_black_24dp"
         title="Options"
         barColorWhenSelected="#D88373"
-        badgeHidesWhenActive="true"/>
+        badgeHidesWhenActive="true" />
     <tab
         id="@+id/tab_directions"
         icon="@drawable/ic_directions_black_24dp"
         title="Directions"
         barColorWhenSelected="#D88373"
         badgeHidesWhenActive="true"
-        badgeBackgroundColor="#2A3D45"
-        />
+        badgeBackgroundColor="#2A3D45" />
     <tab
         id="@+id/tab_search"
         icon="@drawable/ic_search_black_24dp"
         title="Search"
         barColorWhenSelected="#D88373"
-        badgeHidesWhenActive="true"/>
+        badgeHidesWhenActive="true" />
 </tabs>

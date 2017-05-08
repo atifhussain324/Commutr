@@ -16,7 +16,7 @@ import android.widget.TextView;
         CardView cv;
         TextView title;
         TextView description;
-    TextView extraInfo;
+        TextView extraInfo;
         ImageView imageView;
 
         View_Holder(View itemView) {

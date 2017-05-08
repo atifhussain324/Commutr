@@ -6,9 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 import java.sql.Connection;
@@ -41,18 +39,7 @@ public class DBuseActivity extends AppCompatActivity {
         message = bundle.getString(MESSAGE_KEY);
         getTrainInfo ga = new getTrainInfo();
         ga.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        Button button =(Button)findViewById(R.id.back);
-        button.setOnClickListener(new View.OnClickListener(){
 
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(DBuseActivity.this, trainSchedule.class));
-
-
-
-
-            }
-        });
         index = getIntent().getStringExtra("transportation");
 
     }
@@ -68,7 +55,7 @@ public class DBuseActivity extends AppCompatActivity {
             super.onPreExecute();
             pDiaLog = new ProgressDialog(DBuseActivity.this);
             pDiaLog.setCancelable(true);
-            pDiaLog.setMessage("Waiting...");
+            pDiaLog.setMessage("Searching...");
             Log.d("Dbuse","Inside preexecute");
             showDialog();
 

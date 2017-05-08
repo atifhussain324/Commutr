@@ -1,5 +1,4 @@
-<android.support.v7.widget.CardView
-    android:id="@+id/cardView"
+<android.support.v7.widget.CardView android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/activity_vertical_margin"
@@ -29,7 +28,7 @@
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/imageView"
             android:text="Title"
-            android:textSize="30sp" />
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/description"
@@ -38,6 +37,7 @@
             android:layout_below="@+id/title"
             android:layout_toRightOf="@+id/imageView"
             android:text="Description" />
+
         <TextView
             android:id="@+id/extra"
             android:layout_width="wrap_content"
@@ -45,6 +45,17 @@
             android:layout_below="@+id/description"
             android:layout_toRightOf="@+id/imageView"
             android:text="Extra Info" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/priority"
+            android:layout_marginRight="26dp"
+            android:layout_marginEnd="26dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
 

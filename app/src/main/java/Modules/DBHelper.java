@@ -19,19 +19,19 @@ public class DBHelper {
     private static final String dbPassword = "";
     private boolean mError = false;
 
-    public void connect(){
+    public void connect() {
         try {
-        }
-        catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
-    public ResultSet getData(String query, DBResultSetInterface dBResultSetInterface){
+    public ResultSet getData(String query, DBResultSetInterface dBResultSetInterface) {
         ResultSet resultSet = null;
         new SelectTask(query, dBResultSetInterface).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         return resultSet;
     }
+
     private class SelectTask extends AsyncTask<String, Void, Boolean> {
         private String mQuery;
         private DBResultSetInterface mDBResultSetInterface;
@@ -54,17 +54,17 @@ public class DBHelper {
                 mResultSet = mStatement.executeQuery(mQuery);
 
 
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.e("DB", e.getMessage());
                 error = true;
                 mError = true;
             }
             return error;
         }
+
         @Override
         protected void onPostExecute(Boolean error) {
-            if (!error){
+            if (!error) {
                 mDBResultSetInterface.onDataRetrieved(mResultSet);
             }
         }

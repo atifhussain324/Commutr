@@ -1,13 +1,7 @@
 package com.example.atif.maps_;
 
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
-
-import com.example.atif.maps_.MapsActivity;
-import com.example.atif.maps_.routeActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,7 +13,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;

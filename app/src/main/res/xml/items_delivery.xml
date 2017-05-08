@@ -3,7 +3,7 @@
     <item
         value="delivery_none"
         title="No delivery"
-        description="Come to our lovely restaurant and pick up the pizza yourself."/>
+        description="Come to our lovely restaurant and pick up the pizza yourself." />
     <item
         value="delivery_yes"
         title="Delivery"

@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
-
 
 
     <LinearLayout
@@ -14,37 +11,33 @@
         android:orientation="vertical"
         android:background="#fff">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:background="#fff">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:background="#fff">
 
-        <!-- Cover Image -->
+            <!-- Cover Image -->
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/nycskyline" />
-
-
-
-        <!-- Round image -->
-
-        <com.alexzh.circleimageview.CircleImageView
-            android:id="@+id/propic"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:src="@drawable/propic"
-            android:layout_marginTop="75dp"
-            android:layout_gravity="center"
-             />
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/nycskyline" />
 
 
+            <!-- Round image -->
+
+            <com.alexzh.circleimageview.CircleImageView
+                android:id="@+id/propic"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:src="@drawable/propic"
+                android:layout_marginTop="75dp"
+                android:layout_gravity="center" />
 
 
-    </FrameLayout>
+        </FrameLayout>
 
 
         <LinearLayout
@@ -106,6 +99,7 @@
                         android:layout_weight="1"
                         android:text="Reputation Points"
                         android:textSize="20dp" />
+
                     <TextView
                         android:id="@+id/txtView_netVote"
                         android:layout_width="wrap_content"
@@ -138,19 +132,19 @@
 
 
         <Button
-       android:id="@+id/btn_editProfile"
-       android:layout_width="200dp"
-       android:layout_height="wrap_content"
-       android:layout_gravity="center"
-       android:gravity="center"
+            android:id="@+id/btn_editProfile"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
 
-       android:text="EDIT PROFILE"
-       android:textColor="@color/edit_profile"
-       android:textAlignment="center"
-       android:background="@drawable/rounded"
-       android:layout_marginTop="30dp"
-       android:padding="10dp"
-     />
+            android:text="EDIT PROFILE"
+            android:textColor="@color/edit_profile"
+            android:textAlignment="center"
+            android:background="@drawable/rounded"
+            android:layout_marginTop="30dp"
+            android:padding="10dp" />
+
         <Button
             android:id="@+id/btn_signout"
             android:layout_width="200dp"
@@ -163,10 +157,7 @@
             android:textAlignment="center"
             android:background="@drawable/rounded"
             android:layout_marginTop="30dp"
-            android:padding="10dp"
-            />
-
-
+            android:padding="10dp" />
 
 
     </LinearLayout>
@@ -184,14 +175,6 @@
             app:bb_tabXmlResource="@xml/bottombar_tabs_five" />
         />
     </RelativeLayout>
-
-
-
-
-
-
-
-
 
 
 </RelativeLayout>

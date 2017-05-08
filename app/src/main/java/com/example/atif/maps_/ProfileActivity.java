@@ -12,10 +12,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.vision.text.Text;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,8 +23,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
-
-import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
     private TextView displayName, reputation, netVote;
@@ -42,9 +36,32 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        //Bottom Navigation Bar
+        BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
+        bottomBar.setDefaultTab(R.id.tab_profile);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(@IdRes int tabId) {
+                if (tabId == R.id.tab_planner) {
+                    Intent planner = new Intent(getApplicationContext(), MapsActivity.class);
+                    startActivity(planner);
+                }
+                     else if (tabId == R.id.tab_nearby) {
+                        Intent nearby = new Intent(getApplicationContext(), NearbyActivity.class);
+                        startActivity(nearby);
+                    } else if (tabId == R.id.tab_schedule) {
+                        Intent schedule = new Intent(getApplicationContext(), trainSchedule.class);
+                        startActivity(schedule);
+                    } else if (tabId == R.id.tab_alerts) {
+                        Intent alerts = new Intent(getApplicationContext(), AlertActivity.class);
+                        startActivity(alerts);
+                    }
+
+            }
+
+        });
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
         displayName = (TextView) findViewById(R.id.displayName);
         proPic = (ImageView) findViewById(R.id.propic);
         reputation = (TextView) findViewById(R.id.txtView_reputation);
@@ -76,6 +93,7 @@ public class ProfileActivity extends AppCompatActivity {
             editProfile.setVisibility(View.GONE);
         }
         else if(storageRef!=null) {
+
             Glide.with(ProfileActivity.this)
                     .using(new FirebaseImageLoader())
                     .load(storageRef)
@@ -135,30 +153,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        //Bottom Navigation Bar
-        BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
-        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
-            @Override
-            public void onTabSelected(@IdRes int tabId) {
-                if (tabId == R.id.tab_planner) {
-                    Intent planner = new Intent(ProfileActivity.this, MapsActivity.class);
-                    startActivity(planner);
-                } else if (tabId == R.id.tab_nearby) {
-                    Intent offlineMap = new Intent(ProfileActivity.this, offMap.class);
-                    startActivity(offlineMap);
-                } /*else if (tabId == R.id.tab_schedule) {
-                    Intent schedule = new Intent(MapsActivity.this, trainSchedule.class);
-                    startActivity(schedule);
-                } */ else if (tabId == R.id.tab_alerts) {
-                    Intent alerts = new Intent(ProfileActivity.this, AlertActivity.class);
-                    startActivity(alerts);
-                } else if (tabId == R.id.tab_profile) {
-                    Intent setting = new Intent(ProfileActivity.this, ProfileActivity.class);
-                    startActivity(setting);
-                }
-            }
-
-        });
 
     }
 

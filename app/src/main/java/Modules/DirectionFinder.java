@@ -2,12 +2,8 @@ package Modules;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PointOfInterest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -98,10 +94,10 @@ public class DirectionFinder {
         JSONArray jsonRoutes = jsonData.getJSONArray("routes");
         //Log.i("testing","before for loop");
         for (int i = 0; i < jsonRoutes.length(); i++) {
-            Log.v("ListSize","Start of loop to add route");
+            Log.v("ListSize", "Start of loop to add route");
 
-            if(i==0 && !routes.isEmpty()){
-                Log.v("ListSize","list cleared");
+            if (i == 0 && !routes.isEmpty()) {
+                Log.v("ListSize", "list cleared");
                 routes.clear();
             }
 
@@ -130,7 +126,7 @@ public class DirectionFinder {
             routes.add(route);
 
         }
-        Log.v("ListSize","Size of routes list: "+String.valueOf(routes.size()));
+        Log.v("ListSize", "Size of routes list: " + String.valueOf(routes.size()));
 
         listener.onDirectionFinderSuccess(routes);
     }

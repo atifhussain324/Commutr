@@ -1,125 +1,195 @@
 package com.example.atif.maps_;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
-import android.support.annotation.IdRes;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnTabSelectListener;
-import com.roughike.swipeselector.SwipeItem;
-import com.roughike.swipeselector.SwipeSelector;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 
-public class MainActivity extends Activity {
+import Modules.NearbyStations;
 
+public class MainActivity extends AppCompatActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.drop_dialog);
-        //new DBTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    Button btnHit;
+    TextView name;
+    ProgressDialog pd;
+    String stationName;
+    String photoRef;
+    ImageView stationImage;
+    String location;
+    private static final String GOOGLE_API_KEY = "AIzaSyDmISqtltaK4I-e22Oh8W2wb-j0p1u9jSA";
+    public static ArrayList<NearbyStations> stationList = new ArrayList<>();
 
-       SwipeSelector swipeSelector = (SwipeSelector) findViewById(R.id.swipeSelector);
-        swipeSelector.setItems(
-
-                new SwipeItem(0, "Police Investigation", "Description for slide one."),
-                new SwipeItem(1, "Sick Passenger", "Description for slide two."),
-                new SwipeItem(2, "Train Traffic", "Description for slide three."),
-                new SwipeItem(3, "Signal Malfunction", "Description for slide four."),
-                new SwipeItem(4, "FastTrack", "Description for slide four.")
-
-        );
-
-        SwipeSelector swipeSelector2 = (SwipeSelector) findViewById(R.id.swipeSelector2);
-        swipeSelector2.setItems(
-                new SwipeItem(0, "1 Train", "Broadway-7th Avenue Local"),
-                new SwipeItem(1, "2 Train", "Seventh Avenue Express"),
-                new SwipeItem(2, "3 Train", "Seventh Avenue Express"),
-                new SwipeItem(3, "4 Train", "Lexington Avenue Express"),
-                new SwipeItem(4, "5 Train", "Lexington Avenue Express"),
-                new SwipeItem(5, "6 Train", "Lexington Avenue Local/Pehlam Express"),
-                new SwipeItem(6, "7 Train", "Flushing Local"),
-                new SwipeItem(7, "A Train", "8th Avenue Express"),
-                new SwipeItem(8, "B Train", "Central Park West Local/6th Avenue Express"),
-                new SwipeItem(9, "C Train", "8th Avenue Local"),
-                new SwipeItem(10, "D Train", "6th Avenue Express"),
-                new SwipeItem(11, "E Train", "8th Avenue Local"),
-                new SwipeItem(12, "F Train", "6th Avenue Local"),
-                new SwipeItem(13, "G Train", "Brooklyn-Queens Crosstown Local"),
-                new SwipeItem(14, "J Train", "Nassau Street Express"),
-                new SwipeItem(15, "L Train", "14th Street-Canarsie Local"),
-                new SwipeItem(16, "M Train", "Queens Blvd Local/6 Av Local/Myrtle Ave Local"),
-                new SwipeItem(17, "N Train", "Broadway Express"),
-                new SwipeItem(18, "Q Train", "Second Avenue/Broadway Express"),
-                new SwipeItem(19, "R Train", "Queens Boulevard/Broadway/4th Avenue Local"),
-                new SwipeItem(20, "W Train", "Broadway Local"),
-                new SwipeItem(21, "Z Train", "Nassau Street Express"),
-                new SwipeItem(22, "S Train", "42nd Street Shuttle")
-
-        );
-
-        SwipeSelector swipeSelector3 = (SwipeSelector) findViewById(R.id.swipeSelector3);
-        swipeSelector3.setItems(
-                new SwipeItem(0, "Uptown", "Description for slide one."),
-                new SwipeItem(1, "Downtown", "Description for slide two.")
-
-        );
-
-
-        //builder.setView(content);
-
+    public MainActivity(String location) {
+        this.location = location;
 
     }
 
-    /*class DBTask extends AsyncTask<String, Void, Boolean> {
+    /*
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.nearby_cardview);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        setTitle("Stations Nearby");
 
-        private Connection connect;
-        private Statement statement;
-        private ResultSet resultSet;
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        location = preferences.getString("location", "");
 
-        @Override
-        protected Boolean doInBackground(String... params) {
-            boolean status = false;
-            // Setup the connection with the DB
+
+        Log.v("mainLoc", location);
+        //btnHit = (Button) findViewById(R.id.btnHit);
+        name = (TextView) findViewById(R.id.stationName);
+
+        String locationURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + location + "&radius=500&types=subway_station&key=AIzaSyDmISqtltaK4I-e22Oh8W2wb-j0p1u9jSA";
+        Log.v("locationURL", locationURL);
+        new JsonTask().execute(locationURL);
+
+
+
+
+
+    } */
+    public void execute() throws UnsupportedEncodingException {
+        String locationURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + location + "&radius=500&types=subway_station&key=AIzaSyDmISqtltaK4I-e22Oh8W2wb-j0p1u9jSA";
+        Log.v("locationURL", locationURL);
+        new JsonTask().execute(locationURL);
+
+    }
+
+
+    private class JsonTask extends AsyncTask<String, String, String> {
+
+        /*protected void onPreExecute() {
+            super.onPreExecute();
+
+            pd = new ProgressDialog(MainActivity.this);
+            pd.setMessage("Please wait...");
+            pd.setCancelable(false);
+            pd.show();
+        }*/
+
+        protected String doInBackground(String... params) {
+
+
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
             try {
-                Class.forName("com.mysql.jdbc.Driver");
-                connect = DriverManager
-                        .getConnection("jdbc:mysql://104.196.170.96:3306/commutr?"
-                                + "user=root&password=Seniorproject1");
+                URL url = new URL(params[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
 
-                // Statements allow to issue SQL queries to the database
-                statement = connect.createStatement();
-                // Result set get the result of the SQL query
-                resultSet = statement
-                        .executeQuery("select * from routes LIMIT 10");
 
-                while(resultSet.next()){
-                    Log.v("DB", resultSet.getString(4)); // retrives station name
+                InputStream stream = connection.getInputStream();
+
+                reader = new BufferedReader(new InputStreamReader(stream));
+
+                StringBuffer buffer = new StringBuffer();
+                String line = "";
+
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                    Log.d("Response: ", "> " + line);   //here u ll get whole response...... :-)
+
                 }
-                status = true;
+
+                return buffer.toString();
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            catch(Exception e){
-                status = false;
-            }
-            return status;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
-            Toast.makeText(getApplicationContext(), "Connection status: " + result, Toast.LENGTH_LONG).show();
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+           /* if (pd.isShowing()) {
+                pd.dismiss();
+            }
+*/
+
+            //RouteLister.routeList.clear();
+
+
+            //txtJson.setText(result);
+            try {
+                parseJSon(result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void parseJSon(String data) throws JSONException {
+            if (data == null)
+                return;
+
+            JSONObject jsonData = new JSONObject(data);
+            JSONArray jsonStations = jsonData.getJSONArray("results");
+
+            for (int i = 0; i < jsonStations.length(); i++) {
+                NearbyStations station = new NearbyStations();
+                try {
+                    JSONObject jsonResult = jsonStations.getJSONObject(i);
+                    JSONArray jsonImageRef = jsonResult.getJSONArray("photos");
+                    JSONObject jsonRef = jsonImageRef.getJSONObject(0);
+
+                    if (jsonStations.getJSONObject(i) != null) {
+                        stationName = jsonResult.getString("name");
+                        station.setStationName(stationName);
+                        Log.i("testing", stationName);
+                    }
+                    else {
+                        Log.i("testing", "No data found");
+                    }
+
+                    if (jsonRef != null) {
+                        photoRef = jsonRef.getString("photo_reference");
+                        String imageURL = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&photoreference=" + photoRef + "&key=" + GOOGLE_API_KEY;
+                        station.setImageRef(imageURL);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                stationList.add(station);
+
+            }
 
         }
-    }*/
+    }
 }

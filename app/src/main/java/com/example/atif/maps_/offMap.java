@@ -1,17 +1,15 @@
 package com.example.atif.maps_;
 
-import android.content.Intent;
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.media.Image;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.view.View.OnTouchListener;
 
 public class offMap extends AppCompatActivity implements OnTouchListener {
     ImageButton btnAlerts;

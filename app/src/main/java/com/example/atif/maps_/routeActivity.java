@@ -1,16 +1,15 @@
 package com.example.atif.maps_;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import java.util.ArrayList;
 
 import Modules.Recycler_Route_Adapter;
-import Modules.Route;
 import Modules.RouteOption;
 
 public class routeActivity extends AppCompatActivity {
@@ -20,6 +19,9 @@ public class routeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        setTitle("Directions");
 
         RecyclerView recyclerView= (RecyclerView) findViewById(R.id.recycler_view_route);
 
