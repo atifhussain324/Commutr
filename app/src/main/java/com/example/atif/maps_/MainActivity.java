@@ -41,34 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /*
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.nearby_cardview);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
-        setTitle("Stations Nearby");
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        location = preferences.getString("location", "");
-
-
-        Log.v("mainLoc", location);
-        //btnHit = (Button) findViewById(R.id.btnHit);
-        name = (TextView) findViewById(R.id.stationName);
-
-        String locationURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + location + "&radius=500&types=subway_station&key=AIzaSyDmISqtltaK4I-e22Oh8W2wb-j0p1u9jSA";
-        Log.v("locationURL", locationURL);
-        new JsonTask().execute(locationURL);
-
-
-
-
-
-    } */
     public void execute() throws UnsupportedEncodingException {
-        String locationURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + location + "&radius=1000&types=subway_station&key=AIzaSyDmISqtltaK4I-e22Oh8W2wb-j0p1u9jSA";
+        String locationURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + location
+                + "&radius=750&types=subway_station&key=AIzaSyDmISqtltaK4I-e22Oh8W2wb-j0p1u9jSA";
         Log.v("locationURL", locationURL);
         new JsonTask().execute(locationURL);
 
@@ -76,15 +51,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private class JsonTask extends AsyncTask<String, String, String> {
-
-        /*protected void onPreExecute() {
-            super.onPreExecute();
-
-            pd = new ProgressDialog(MainActivity.this);
-            pd.setMessage("Please wait...");
-            pd.setCancelable(false);
-            pd.show();
-        }*/
 
         protected String doInBackground(String... params) {
 
@@ -136,15 +102,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-           /* if (pd.isShowing()) {
-                pd.dismiss();
-            }
-*/
-
-            //RouteLister.routeList.clear();
-
-
-            //txtJson.setText(result);
             try {
                 parseJSon(result);
             } catch (JSONException e) {
@@ -177,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
 
                     if (jsonRef != null) {
                         photoRef = jsonRef.getString("photo_reference");
-                        String imageURL = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&photoreference=" + photoRef + "&key=" + GOOGLE_API_KEY;
+                        String imageURL = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&photoreference="
+                                + photoRef + "&key=" + GOOGLE_API_KEY;
                         station.setImageRef(imageURL);
                     }
 

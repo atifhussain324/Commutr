@@ -101,6 +101,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView postTime;
     private TextView upvoteText;
     private TextView downvoteText;
+    private TextView netVoteText;
     private String eventName;
     private Drawable icon;
     private String dropName;
@@ -711,11 +712,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
 
-                displayName = (TextView) customView.findViewById(R.id.user);
+                //displayName = (TextView) customView.findViewById(R.id.user);
                 repScore = (TextView) customView.findViewById(R.id.score);
-                postTime = (TextView) customView.findViewById(R.id.postedTime);
+                //postTime = (TextView) customView.findViewById(R.id.postedTime);
                 upvoteText = (TextView) customView.findViewById(R.id.upvoteCount);
                 downvoteText = (TextView) customView.findViewById(R.id.downvoteCount);
+                netVoteText = (TextView) customView.findViewById(R.id.netVote);
 
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -730,12 +732,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         downvoteCount = snapshot.child("users").child(arg0.getTitle()).child("marker").child("downvote").getValue().toString();
                         String directionBound = snapshot.child("users").child(arg0.getTitle()).child("marker").child("direction").getValue().toString();
                         String reputation = snapshot.child("users").child(arg0.getTitle()).child("reputation").getValue().toString();
+                        String netVote = snapshot.child("users").child(arg0.getTitle()).child("netVote").getValue().toString();
 
                        if (directionBound.equals("0")){
-                           direction= "Uptown Bound";
+                           direction= "Uptown";
                        }
                         else {
-                           direction = "Downtown Bound";
+                           direction = "Downtown";
                        }
 
 
@@ -813,16 +816,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                         //displayName.setText("By: " + fName + " " + lName + " {" + reputation + "}");
-                        //repScore.setText();
-                        postTime.setText("Posted: " + postedTime);
+                        //postTime.setText("Posted: " + postedTime);
+                        repScore.setText(reputation+ " points");
                         upvoteText.setText(upvoteCount);
                         downvoteText.setText(downvoteCount);
+                        netVoteText.setText(netVote + " votes");
                         BottomDialog bottomDialog = new BottomDialog.Builder(MapsActivity.this)
 
                                 .setIcon(icon)
                                 .setTitle(dropName + System.lineSeparator() + direction)
                                 .setCustomView(customView)
-                                .setContent("By: " + fName + " " + lName + " {" + reputation + "}")
+                                .setContent(" By: " + fName + " " + lName + "                  " + "Posted: " + postedTime)
 
                                 .build();
 
