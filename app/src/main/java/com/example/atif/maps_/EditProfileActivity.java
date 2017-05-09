@@ -97,7 +97,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
                     if(!dataSnapshot.child("users").child(uid).hasChild("reputation")){
                         mDatabase.child("users").child(uid).child("reputation").setValue(0);
-                        mDatabase.child("users").child(uid).child("netVotes").setValue(0);
+                        mDatabase.child("users").child(uid).child("netVote").setValue(0);
                     }
 
                 }

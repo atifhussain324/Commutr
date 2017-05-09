@@ -388,7 +388,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     reputation = reputation -1;
                                     mDatabase.child(userID).child("reputation").setValue(reputation);
                                 }
-                                else{
+                                else if(newNetVote>0){
 
                                     reputation = reputation +1;
                                     mDatabase.child(userID).child("reputation").setValue(reputation);
@@ -673,6 +673,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     Log.v("downClick", String.valueOf(upCount));
                                     mDatabase.child("users").child(arg0.getTitle()).child("marker").child("upvote").setValue(upCount);
                                     mDatabase.child("users").child(arg0.getTitle()).child("marker").child("vote").child(loggedUser.getUid()).setValue("true");
+                                    Toast.makeText(MapsActivity.this, "Vote Saved Successfully!",
+                                            Toast.LENGTH_LONG).show();
                                 }
                             }
 

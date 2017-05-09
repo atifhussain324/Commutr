@@ -29,6 +29,7 @@
             <!-- Round image -->
 
             <com.alexzh.circleimageview.CircleImageView
+
                 android:id="@+id/propic"
                 android:layout_width="90dp"
                 android:layout_height="90dp"

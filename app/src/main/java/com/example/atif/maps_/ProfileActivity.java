@@ -88,7 +88,7 @@ public class ProfileActivity extends AppCompatActivity {
          // Reference to an image file in Firebase Storage
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReferenceFromUrl("gs://commutr-149323.appspot.com").child("Images").child(loggedUser.getUid());
-
+        Log.v("ImageTest",storageRef.toString());
 
         if(loggedUser.getProviders().get(0).equals("google.com")){
             Glide.with(ProfileActivity.this)
@@ -99,8 +99,9 @@ public class ProfileActivity extends AppCompatActivity {
             displayName.setText(loggedUser.getDisplayName());
             editProfile.setVisibility(View.GONE);
         }
-        else if(storageRef!=null) {
 
+        else if(storageRef!=null) {
+            Log.v("Code Checker","Code executed");
             Glide.with(ProfileActivity.this)
                     .using(new FirebaseImageLoader())
                     .load(storageRef)

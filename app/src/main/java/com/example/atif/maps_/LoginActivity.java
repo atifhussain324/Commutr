@@ -200,15 +200,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(!dataSnapshot.child("users").hasChild(loggedUser.getUid())){
+                        if(loggedUser!=null) {
+                            if (!dataSnapshot.child("users").hasChild(loggedUser.getUid())) {
                                 mDatabase.child("users").child(loggedUser.getUid()).child("reputation").setValue(0);
                                 mDatabase.child("users").child(loggedUser.getUid()).child("netVote").setValue(0);
-                                String[] names =loggedUser.getDisplayName().split(" ");
+                                String[] names = loggedUser.getDisplayName().split(" ");
                                 mDatabase.child("users").child(loggedUser.getUid()).child("firstName").setValue(names[0]);
                                 mDatabase.child("users").child(loggedUser.getUid()).child("lastName").setValue(names[1]);
 
 
                             }
+                        }
+
 
                             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                             startActivity(intent);
