@@ -24,12 +24,17 @@ import com.google.firebase.storage.StorageReference;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
+import java.util.ArrayList;
+
+import Modules.NearbyStations;
+
 public class ProfileActivity extends AppCompatActivity {
     private TextView displayName, reputation, netVote;
     private ImageView proPic;
     private Button signOut, editProfile;
     private DatabaseReference mDatabase;
     private FirebaseUser loggedUser;
+    ArrayList<NearbyStations> temp2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +53,8 @@ public class ProfileActivity extends AppCompatActivity {
                 }
                      else if (tabId == R.id.tab_nearby) {
                         Intent nearby = new Intent(getApplicationContext(), NearbyActivity.class);
+                        temp2 = MainActivity.stationList;
+                         nearby.putExtra("STATION",temp2);
                         startActivity(nearby);
                     } else if (tabId == R.id.tab_schedule) {
                         Intent schedule = new Intent(getApplicationContext(), trainSchedule.class);

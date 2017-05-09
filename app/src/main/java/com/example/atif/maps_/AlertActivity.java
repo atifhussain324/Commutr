@@ -25,8 +25,11 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import Modules.NearbyStations;
+
 public class AlertActivity extends AppCompatActivity {
     private ResponseReceiver receiver;
+    ArrayList<NearbyStations> temp2;
 
 
     @Override
@@ -55,6 +58,8 @@ public class AlertActivity extends AppCompatActivity {
                 }
                     else if (tabId == R.id.tab_nearby) {
                         Intent nearby = new Intent(getApplicationContext(), NearbyActivity.class);
+                        temp2 = MainActivity.stationList;
+                        nearby.putExtra("STATION",temp2);
                         startActivity(nearby);
                     } else if (tabId == R.id.tab_schedule) {
                         Intent schedule = new Intent(getApplicationContext(), trainSchedule.class);

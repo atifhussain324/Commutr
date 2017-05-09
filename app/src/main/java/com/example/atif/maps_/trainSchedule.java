@@ -15,6 +15,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
+import java.util.ArrayList;
+
+import Modules.NearbyStations;
+
 public class trainSchedule extends AppCompatActivity {
 
     AutoCompleteTextView editText;
@@ -22,6 +26,8 @@ public class trainSchedule extends AppCompatActivity {
 
     String index;
     ListView listview;
+    ArrayList<NearbyStations> temp2;
+
     public final static String MESSAGE_KEY = "com.example.atif.commutr_.message_key";
 
 
@@ -47,6 +53,8 @@ public class trainSchedule extends AppCompatActivity {
                 }
                     else if (tabId == R.id.tab_nearby) {
                         Intent nearby = new Intent(getApplicationContext(), NearbyActivity.class);
+                        temp2 = MainActivity.stationList;
+                        nearby.putExtra("STATION",temp2);
                         startActivity(nearby);
                     }  else if (tabId == R.id.tab_alerts) {
                         Intent alerts = new Intent(getApplicationContext(), AlertActivity.class);

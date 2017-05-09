@@ -513,7 +513,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     Calendar postedTime = GregorianCalendar.getInstance();
                                     SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
                                     SimpleDateFormat timeFormat12 = new SimpleDateFormat("h:mm a");
-                                    expirationTime.add(GregorianCalendar.MINUTE, 2);
+                                    expirationTime.add(GregorianCalendar.MINUTE, 10);
 
                                     SwipeItem selectedItem2 = swipeSelector2.getSelectedItem();
                                     int iconValue = (Integer) selectedItem2.value;

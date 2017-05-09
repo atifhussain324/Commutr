@@ -142,7 +142,7 @@ public class DBuseActivity extends AppCompatActivity {
                 String trainID = rs.getString(1);
                 String Direction = rs.getString(2);
                 String time = rs.getString(3);
-                String display = trainID +""+time+"Minutes" + "\n" +"Towards "+ Direction;
+                String display = trainID +"Train"+time+"Minutes" + "\n" +"Towards "+ Direction;
                 annoucements.add(display);
             }
             rs.close();

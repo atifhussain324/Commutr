@@ -79,7 +79,7 @@ public class NearbyActivity extends AppCompatActivity{
         Recycler_Stations_Adapter adapter = new Recycler_Stations_Adapter(list, getApplication());
         recyclerView.setAdapter(adapter);
 
-
+        MainActivity.stationList.clear();
 
     }
 
