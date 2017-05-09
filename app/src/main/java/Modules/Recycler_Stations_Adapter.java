@@ -12,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
+import com.example.atif.maps_.NearbyActivity;
+import com.example.atif.maps_.ProfileActivity;
 import com.example.atif.maps_.R;
 
 import java.io.InputStream;
@@ -44,9 +47,16 @@ public class Recycler_Stations_Adapter extends RecyclerView.Adapter<View_Holder_
 
         holder.stationName.setText(list.get(position).getStationName());
 
-        holder.stationImage.setImageDrawable(LoadImageFromWebOperations(list.get(position).getImageRef()));
+
+       // holder.stationImage.setImageDrawable(LoadImageFromWebOperations(list.get(position).getImageRef()));
         Log.v("stationNameAdap", list.get(position).getStationName());
         Log.v("imageref", list.get(position).getImageRef());
+
+        Glide.with(context)
+                //.using(new FirebaseImageLoader())
+                //.load(storageRef)
+                .load(list.get(position).getImageRef())
+                .into(holder.stationImage);
 
 
     }

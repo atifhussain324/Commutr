@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     } */
     public void execute() throws UnsupportedEncodingException {
-        String locationURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + location + "&radius=500&types=subway_station&key=AIzaSyDmISqtltaK4I-e22Oh8W2wb-j0p1u9jSA";
+        String locationURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + location + "&radius=1000&types=subway_station&key=AIzaSyDmISqtltaK4I-e22Oh8W2wb-j0p1u9jSA";
         Log.v("locationURL", locationURL);
         new JsonTask().execute(locationURL);
 

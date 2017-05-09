@@ -68,7 +68,9 @@ public class NearbyActivity extends AppCompatActivity{
         recyclerView.setLayoutManager(layoutManager);
 
         ArrayList<NearbyStations> list = (ArrayList<NearbyStations>) getIntent().getSerializableExtra("STATION");
-
+        for(int i=0;i<list.size();i++){
+            Log.v("imageTest",list.get(i).getImageRef().toString());
+        }
         try {
             Log.v("listSize", String.valueOf(list.size()));
         }
