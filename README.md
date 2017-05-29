@@ -8,6 +8,6 @@ Commutr is an all around commuting application that combines desired features, w
 4.	Train Arrivals – Commutr provides the functionality of viewing the arrival of trains at specific train stations, which are derived from the Static data feeds that the MTA provides. A user enters a station name and is presented with a list of trains going in both directions and their approximate arrival time.
 5. 	Crowdfed Alerts (In Progress) - Following the Real Time Status Updates, this feature will also provide updates of service changes and delays along with other miscellaneous details, not from the MTA, but from everyday commuters. Using a Upvote/Downvote feature, users of the app will be able to drop pins on locations that have delays, sick customer, or service changes, which in turn other users will be able to alert near by commuters of this event by upvoting. 
 
-Link to the Final report without the Crowdfed Alert System and App screenshots - https://drive.google.com/file/d/0B8K9dGJLu_HGSHN1ZW5qdDgwX3c/view?usp=sharing 
+Link to the Final report - https://drive.google.com/drive/u/1/folders/0B8K9dGJLu_HGMTEySmlOcXh3Q3c
 
 
