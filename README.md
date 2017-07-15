@@ -1,5 +1,7 @@
 # Commutr
 
+Website with Demo - http://www.commutrnyit.info/
+
 Commutr is an all around commuting application that combines desired features, which include the following:
 
 1.	Trip Planner - This feature allows users to plan their trip accordingly, using any alerts or service changes to manage the most efficient way to arriving at a destination. The planner displays the fastest route to reaching a destination and a step by step directional guide. 
@@ -10,6 +12,5 @@ Commutr is an all around commuting application that combines desired features, w
 
 Link to the Final report - https://drive.google.com/drive/u/1/folders/0B8K9dGJLu_HGMTEySmlOcXh3Q3c
 
-Website with Demo - http://commutrnyit.info/
 
 
